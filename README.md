@@ -15,15 +15,17 @@ ContriHUB is an event where we are expecting to get more and more people involve
     ```
 * Activate the environment
     * On Windows, run: `<env_name>\Scripts\activate`
-    * On Linux/Mac, run: `source <env_name>/bin/activate`    
-* Install the dependencies
-    ```
-    pip install -r requirements.txt
-    ```
+    * On Linux/Mac, run: `source <env_name>/bin/activate`  
+    
 * Change directory to *ContriHUB-22*
     ```
     cd ContriHUB-22
     ```
+* Install the dependencies
+    ```
+    pip install -r requirements.txt
+    ```
+
 * Create a **.env** file
     * In Windows, Right Click, Open Git Bash here, and run: `touch .env`
     * In Linux/Mac, run: `touch .env`
