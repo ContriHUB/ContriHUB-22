@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class Project(models.Model):
-    name = models.CharField(verbose_name="Name", max_length=200)
+    name = models.CharField(verbose_name="Name", max_length=200,blank=False)
 
     api_url = models.URLField(verbose_name="API URL")
 
