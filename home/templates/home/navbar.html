@@ -60,19 +60,45 @@
                               data-mdb-toggle="dropdown" aria-expanded="false">
                         All Projects
                       </button>
-                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        {% for project in projects %}
-                            <li class="" style="width: 500px">
+                      
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" >
+                      
+                            <li class="" style="width: 410px" >
                                 <span class="dropdown-item-text">
-                                    <button type="button" class="btn btn-secondary p-1" data-mdb-ripple-color="dark">
-                                        <a class='text-white' href="{{ project.html_url }}" target="_blank"> {# style="color: white"  #}
-                                           <b>{{ project.name }}</b> [ {{ project.domain }} ]
-                                        </a>
-                                    </button>
+                                 
+                                        
+                                          <table style=" border-collapse: separate;
+                                          border-spacing: 0 2px;">
+
+                                            <tr style="border: 1px solid white; background-color: #aa66cc; color: white;">
+                                             
+                                              <th style="border: 1px solid white; border-radius: 8px;  padding: 0 15px;" ><b>Project name</b></th>
+                                              <th style="border: 1px solid white; border-radius: 8px;  padding: 0 15px;"><b>Domain</b></th>
+
+                                            </tr>
+                                        
+                                            {% for project in projects %}
+
+                                          <tr style="border: 1px solid white; background-color: #aa66cc; color: white;">
+                                           
+                                            <td style="border: 1px solid white; border-radius: 8px;  padding: 0 15px;" ><a href="{{ project.html_url }}" style="color: white;" >{{ project.name }}</a></td>
+                                            <td style="border: 1px solid white; border-radius: 8px;  padding: 0 15px;">[ {{ project.domain }} ]</td>
+                                           
+                                          </tr>
+
+                                          {% endfor %}
+
+                                          </table>
+                                        
+                                  
                                 </span>
                             </li>
-                        {% endfor %}
+
+                            
+                       
                       </ul>
+                     
+                      
                     </div>
                   </li>
             </ul>
