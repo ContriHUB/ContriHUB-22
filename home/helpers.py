@@ -2,7 +2,7 @@
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
+import threading
 # email_context = {
 #     'mentor': issue.mentor,
 #     'user': requester,
@@ -13,24 +13,36 @@ from django.utils.html import strip_tags
 # }
 
 
-def send_email(template_path, email_context):
-    # print(email_context)
-    context = {
-        'mentor': email_context['mentor'].username,
-        'user': email_context['user'].username,
-        'url': email_context['url'],
-        'protocol': email_context['protocol'],
-        'host': email_context['host']
-    }
+class EmailThread(threading.Thread):
+    def __init__(self, template_path, email_context):
+        self.template_path=template_path
+        self.email_context=email_context
+        threading.Thread.__init__(self)
+        
+    def run(self):
+        # print(email_context)
+        context = {
+            'mentor': self.email_context['mentor'].username,
+            'user': self.email_context['user'].username,
+            'url': self.email_context['url'],
+            'protocol': self.email_context['protocol'],
+            'host': self.email_context['host']
+        }
 
-    html_message = render_to_string(template_path, context=context)
-    plain_message = strip_tags(html_message)
+        html_message = render_to_string(self.template_path, context=context)
+        plain_message = strip_tags(html_message)
 
-    from_email = "noreply@contriHUB-21"
-    to = str(email_context['mentor'].email)
+        from_email = "noreply@contriHUB-21"
+        to = str(self.email_context['mentor'].email)
 
-    try:
-        mail.send_mail(email_context['subject'], plain_message, from_email, [to], html_message=html_message,
-                       fail_silently=False)
-    except mail.BadHeaderError:
-        return mail.BadHeaderError
+        html_message = render_to_string(self.template_path, context=context)
+        plain_message = strip_tags(html_message)
+
+        from_email = "noreply@contriHUB-21"
+        to = str(self.email_context['mentor'].email)
+
+        try:
+            mail.send_mail(self.email_context['subject'], plain_message, from_email, [to], html_message=html_message,
+                           fail_silently=False)
+        except mail.BadHeaderError:
+            return mail.BadHeaderError
