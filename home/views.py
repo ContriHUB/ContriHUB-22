@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 
-from home.helpers import send_email
+from home.helpers import EmailThread
 from django.core import mail
 
 from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest
@@ -68,7 +68,7 @@ def request_issue_assignment(request, issue_pk):
             'subject': "Request for Issue Assignment under ContriHUB-22.",
         }
         try:
-            send_email(template_path=template_path, email_context=email_context)
+            EmailThread(template_path=template_path, email_context=email_context).start()
             # TODO:ISSUE: Create Html Template for HttpResponses in home/views.py
             return HttpResponse(f"Issue Requested Successfully. Email Request Sent to the Mentor(\
                                 {issue.mentor.username}). Keep your eye out on your profile.")
@@ -152,7 +152,7 @@ def submit_pr_request(request, active_issue_pk):
                     'subject': "Request for Approval of PR on an issue under ContriHUB-22.",
                 }
                 try:
-                    send_email(template_path=template_path, email_context=email_context)
+                    EmailThread(template_path=template_path, email_context=email_context).start()
                     message = f"Email Request Sent to the Mentor({issue.mentor.username}). PR Verification Request\
                               Successfully Submitted for <a href={issue.html_url}>Issue #" f"{issue.number}\
                               </a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
