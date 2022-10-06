@@ -15,10 +15,10 @@ import threading
 
 class EmailThread(threading.Thread):
     def __init__(self, template_path, email_context):
-        self.template_path=template_path
-        self.email_context=email_context
+        self.template_path = template_path
+        self.email_context = email_context
         threading.Thread.__init__(self)
-        
+
     def run(self):
         # print(email_context)
         context = {
