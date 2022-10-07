@@ -90,4 +90,91 @@
       </div>
     </div>
   </div>
+  {% if user.username == native_profile.user.username and user.userprofile.role == user.userprofile.STUDENT %}
+      <div 
+        class="position-fixed w-100 h-100 edit-profile-modal-blur"
+        style="
+          top: 0;
+          left: 0;
+          background-color: black;
+          opacity: 0.5;
+        "
+      >
+      </div>
+      <div 
+        class="position-fixed w-100 edit-profile-modal"
+        style="
+          top: 20%;
+          left: 0;
+        "
+      >
+        <form
+          class="px-3 py-4 w-100 mx-auto"
+          style="
+            background-color: white;
+            max-width: 800px;
+            border-radius: 10px;
+          "
+        >
+          <p class="text-center font-italic">LinkedIn Profile ID can be edited immediately</p>
+
+          <div class="form-outline mb-4">
+            <input type="url" id="edit-linkedin" class="form-control" value="{{ native_profile.linkedin_id }}" placeholder="Enter your LinkedIn ID" />
+            <label class="form-label" for="edit-linkedin">LinkedIn ID</label>
+          </div>
+        
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit</button>
+
+          <p class="text-center font-italic">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
+
+          <div class="row mb-2">
+            <div class="col-12 col-md-6">
+              <div class="form-outline">
+                <input type="text" id="edit-regno" class="form-control" value="{{ native_profile.registration_no }}" placeholder="Enter your Regno" />
+                <label class="form-label" for="edit-regno">Regno</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mt-2 mt-md-0">
+              <div class="form-outline">
+                <input type="text" id="edit-name" class="form-control" value="{{ native_profile.user.first_name }} {{ native_profile.user.last_name }}" placeholder="Enter your Name" />
+                <label class="form-label" for="edit-name">Name</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12 col-md-6">
+              <div class="form-outline">
+                <select class="form-control" id="edit-year">
+                  {% for year in student_years %}
+                    {% if year.1 == native_profile.get_current_year_display %}
+                      <option value="{{ year.0 }}" selected>{{ year.1 }}</option>
+                    {% else %}
+                      <option value="{{ year.0 }}">{{ year.1 }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <label class="form-label" for="edit-year">Year</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mt-2 mt-md-0">
+              <div class="form-outline">
+                <select class="form-control" id="edit-course">
+                  {% for course in student_courses %}
+                    {% if course.1 == native_profile.get_course_display %}
+                      <option value="{{ course.0 }}" selected>{{ course.1 }}</option>
+                    {% else %}
+                      <option value="{{ course.0 }}">{{ course.1 }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <label class="form-label" for="edit-course">Course</label>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit</button>
+        </form>
+      </div>
+  {% endif %}
 </section>

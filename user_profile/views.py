@@ -42,6 +42,8 @@ def profile(request, username):
             pr_form = PRSubmissionForm()
 
             context = {
+                "student_years": UserProfile.YEARS,
+                "student_courses": UserProfile.COURSES,
                 "mentored_issues": mentored_issues,
                 "pr_requests_by_student": pr_requests_by_student,
                 "pr_requests_for_mentor": pr_requests_for_mentor,
