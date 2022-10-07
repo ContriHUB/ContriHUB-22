@@ -338,5 +338,14 @@
 {% endblock %}
 
 {% block javascript %}
-
+    {% if user.username == native_profile.user.username and user.userprofile.role == user.userprofile.STUDENT %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            function toggleEditProfileModal()
+            {
+                $('.edit-profile-modal-blur').toggle();
+                $('.edit-profile-modal').toggle();
+            }
+        </script>
+    {% endif %}
 {% endblock %}

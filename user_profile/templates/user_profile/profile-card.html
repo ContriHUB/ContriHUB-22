@@ -29,7 +29,7 @@
                       <h6><b>Personal Information</b></h6>
                     </div>
                     <div class="col-2">
-                      <i role='button' class="fas fa-edit position-absolute"></i>
+                      <i role='button' class="fas fa-edit position-absolute" onclick="toggleEditProfileModal();"></i>
                     </div>
                   </div>
                 {% else %}
@@ -98,6 +98,7 @@
           left: 0;
           background-color: black;
           opacity: 0.5;
+          display: none;
         "
       >
       </div>
@@ -106,6 +107,7 @@
         style="
           top: 20%;
           left: 0;
+          display: none;
         "
       >
         <form
@@ -116,14 +118,21 @@
             border-radius: 10px;
           "
         >
-          <p class="text-center font-italic">LinkedIn Profile ID can be edited immediately</p>
+          <div class="row">
+            <div class="col-10 text-center">
+              <p class="text-center font-italic">LinkedIn Profile ID can be edited immediately</p>
+            </div>
+            <div class="col-2 d-flex justify-content-end">
+              <i role='button' class="fas fa-times-circle" onclick="toggleEditProfileModal();"></i>
+            </div>
+          </div>
 
           <div class="form-outline mb-4">
             <input type="url" id="edit-linkedin" class="form-control" value="{{ native_profile.linkedin_id }}" placeholder="Enter your LinkedIn ID" />
             <label class="form-label" for="edit-linkedin">LinkedIn ID</label>
           </div>
         
-          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit</button>
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Edit</button>
 
           <p class="text-center font-italic">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
 
@@ -173,7 +182,7 @@
             </div>
           </div>
 
-          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit</button>
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit Request</button>
         </form>
       </div>
   {% endif %}
