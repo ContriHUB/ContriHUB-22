@@ -6,6 +6,20 @@ from django.utils import timezone
 
 User = get_user_model()
 
+class Domain(models.Model):
+
+    name = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SubDomain(models.Model):
+
+    name = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return self.name
 
 class Project(models.Model):
     name = models.CharField(verbose_name="Name", max_length=200)
@@ -14,8 +28,10 @@ class Project(models.Model):
 
     html_url = models.URLField(verbose_name="HTML URL")
 
-    domain = models.CharField(verbose_name="Domain", max_length=100, null=True, blank=True)
-
+    domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING, null=True, default=None)
+    
+    subdomain = models.ForeignKey(SubDomain, on_delete=models.DO_NOTHING, null=True, default=None)
+    
     def __str__(self):
         return self.name
 

@@ -3,7 +3,7 @@ from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 from home.helpers import send_email
 from django.core import mail
 
-from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest
+from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest, Domain, SubDomain
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
@@ -19,14 +19,47 @@ from django.utils import timezone
 # TODO:ISSUE: Up-vote Down-vote Issue Feature
 from user_profile.models import UserProfile
 
-
 @complete_profile_required
 def home(request):
     project_qs = Project.objects.all()
     issues_qs = Issue.objects.all()
+    domains_qs = Domain.objects.all()
+    subdomains_qs = SubDomain.objects.all()
     context = {
         'projects': project_qs,
-        'issues': issues_qs
+        'issues': issues_qs,
+        'domains': domains_qs,
+        'subdomains': subdomains_qs
+    }
+    return render(request, 'home/index.html', context=context)
+
+@complete_profile_required
+def filter_by_domain(request, domain_pk):    
+    domain = Domain.objects.get(pk=domain_pk)
+    project_qs = Project.objects.all()
+    issues_qs = Issue.objects.filter(project__domain=domain)
+    domains_qs = Domain.objects.all()
+    subdomains_qs = SubDomain.objects.all()
+    context = {
+        'projects': project_qs,
+        'issues': issues_qs,
+        'domains': domains_qs,
+        'subdomains': subdomains_qs
+    }
+    return render(request, 'home/index.html', context=context)
+
+@complete_profile_required
+def filter_by_subdomain(request, subdomain_pk):    
+    subdomain = SubDomain.objects.get(pk=subdomain_pk)
+    project_qs = Project.objects.all()
+    issues_qs = Issue.objects.all().filter(project__subdomain=subdomain)
+    domains_qs = Domain.objects.all()
+    subdomains_qs = SubDomain.objects.all()
+    context = {
+        'projects': project_qs,
+        'issues': issues_qs,
+        'domains': domains_qs,
+        'subdomains': subdomains_qs
     }
     return render(request, 'home/index.html', context=context)
 
