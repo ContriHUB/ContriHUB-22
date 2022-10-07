@@ -19,6 +19,7 @@ from django.utils import timezone
 # TODO:ISSUE: Up-vote Down-vote Issue Feature
 from user_profile.models import UserProfile
 
+
 @complete_profile_required
 def home(request):
     project_qs = Project.objects.all()
@@ -33,8 +34,9 @@ def home(request):
     }
     return render(request, 'home/index.html', context=context)
 
+
 @complete_profile_required
-def filter_by_domain(request, domain_pk):    
+def filter_by_domain(request, domain_pk):
     domain = Domain.objects.get(pk=domain_pk)
     project_qs = Project.objects.all()
     issues_qs = Issue.objects.filter(project__domain=domain)
@@ -48,8 +50,9 @@ def filter_by_domain(request, domain_pk):
     }
     return render(request, 'home/index.html', context=context)
 
+
 @complete_profile_required
-def filter_by_subdomain(request, subdomain_pk):    
+def filter_by_subdomain(request, subdomain_pk):
     subdomain = SubDomain.objects.get(pk=subdomain_pk)
     project_qs = Project.objects.all()
     issues_qs = Issue.objects.all().filter(project__subdomain=subdomain)
