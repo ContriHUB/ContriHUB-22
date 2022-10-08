@@ -21,9 +21,9 @@ def send_email(template_path, email_context):
         'user': email_context['user'].username,
         'url': email_context['url'],
         'protocol': email_context['protocol'],
-        'host': email_context['host'],   
-        'issue': email_context['issue'],  
-        'action': email_context['action'],    
+        'host': email_context['host'],
+        'issue': email_context['issue'],
+        'action': email_context['action'],
         'receiver': email_context['receiver'].username,
     }
 
