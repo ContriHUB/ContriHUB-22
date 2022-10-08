@@ -19,24 +19,30 @@ from django.utils import timezone
 # TODO:ISSUE: Up-vote Down-vote Issue Feature
 from user_profile.models import UserProfile
 
-
 @complete_profile_required
 def home(request):
+    global issues_qs, domain, subdomain
     project_qs = Project.objects.all()
     issues_qs = Issue.objects.all()
     domains_qs = Domain.objects.all()
     subdomains_qs = SubDomain.objects.all()
+    domain = 'All'
+    subdomain = 'All'
     context = {
         'projects': project_qs,
         'issues': issues_qs,
         'domains': domains_qs,
-        'subdomains': subdomains_qs
+        'subdomains': subdomains_qs,
+        'curr_domain': domain,        
+        'curr_subdomain': subdomain
     }
     return render(request, 'home/index.html', context=context)
 
 
 @complete_profile_required
 def filter_by_domain(request, domain_pk):
+    global issues_qs, domain, subdomain
+    subdomain = 'All'
     domain = Domain.objects.get(pk=domain_pk)
     project_qs = Project.objects.all()
     issues_qs = Issue.objects.filter(project__domain=domain)
@@ -46,23 +52,30 @@ def filter_by_domain(request, domain_pk):
         'projects': project_qs,
         'issues': issues_qs,
         'domains': domains_qs,
-        'subdomains': subdomains_qs
+        'subdomains': subdomains_qs,
+        'curr_domain': domain,
+        'curr_subdomain': subdomain
     }
     return render(request, 'home/index.html', context=context)
 
 
 @complete_profile_required
 def filter_by_subdomain(request, subdomain_pk):
+    global issues_qs, domain, subdomain
     subdomain = SubDomain.objects.get(pk=subdomain_pk)
     project_qs = Project.objects.all()
-    issues_qs = Issue.objects.all().filter(project__subdomain=subdomain)
+    if domain is not 'All':
+        issues_qs = Issue.objects.filter(project__domain=domain)
+    issues_qs = issues_qs.filter(project__subdomain=subdomain)
     domains_qs = Domain.objects.all()
     subdomains_qs = SubDomain.objects.all()
     context = {
         'projects': project_qs,
         'issues': issues_qs,
         'domains': domains_qs,
-        'subdomains': subdomains_qs
+        'subdomains': subdomains_qs,
+        'curr_domain': domain,
+        'curr_subdomain': subdomain
     }
     return render(request, 'home/index.html', context=context)
 

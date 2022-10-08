@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth import get_user_model
 from contrihub.settings import MAX_SIMULTANEOUS_ISSUE, DAYS_PER_ISSUE_FREE, DAYS_PER_ISSUE_EASY, \
@@ -17,7 +18,7 @@ class Domain(models.Model):
 
 class SubDomain(models.Model):
 
-    name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -30,7 +31,7 @@ class Project(models.Model):
 
     html_url = models.URLField(verbose_name="HTML URL")
     domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING, null=True, default=None)
-    subdomain = models.ForeignKey(SubDomain, on_delete=models.DO_NOTHING, null=True, default=None)
+    subdomain = models.ForeignKey(SubDomain, on_delete=models.DO_NOTHING, blank=True, default=None, null=True)
 
     def __str__(self):
         return self.name

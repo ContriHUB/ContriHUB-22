@@ -16,7 +16,7 @@
     }
     .dropdown-menu > li:hover > .dropdown-submenu {
     display: block;
-    }
+    } 
 </style>
 <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
   <!-- Container wrapper -->
@@ -101,7 +101,7 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                       <li>
                         <a class="dropdown-item" href="#">
-                          Domain &raquo;
+                          Domain &raquo; <button type="button" disabled class="btn btn-success btn-sm">{{ curr_domain }}</button>
                         </a>
                         <ul class="dropdown-menu dropdown-submenu">
                           {% for domain in domains %}
@@ -116,7 +116,7 @@
                       </li>
                       <li>
                         <a class="dropdown-item" href="#">
-                          SubDomain &raquo;
+                          SubDomain &raquo; <button type="button" disabled class="btn btn-danger btn-sm">{{ curr_subdomain }}</button>
                         </a>
                         <ul class="dropdown-menu dropdown-submenu">
                           {% for subdomain in subdomains %}
