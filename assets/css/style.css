@@ -1,0 +1,22 @@
+<style>
+        {# TODO:ISSUE Move styles to separate CSS file #}
+        html {
+            height:100%;
+        }
+        body {
+            height:100%;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            background: url('{% static "images/body/background.jpg" %}');
+            background-size: cover;
+        }
+
+        .btn {
+          text-transform: unset !important;
+        }
+        {% block style %}
+        {% endblock %}
+    </style>

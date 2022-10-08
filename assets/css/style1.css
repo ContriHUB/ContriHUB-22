@@ -1,0 +1,16 @@
+.m-3{
+    border-radius: 15px;
+}
+
+.d-flex{
+    background-color: rgba(0, 0, 0, 0.2);
+    margin: 0 1rem;
+}
+
+#tabularview{
+    display: none;
+}
+
+.row{
+    margin-top: 0.8rem;
+}

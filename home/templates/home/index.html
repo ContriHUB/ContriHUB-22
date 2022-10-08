@@ -23,7 +23,7 @@
     <div class="container-flow p-3" >
     <div class="row row-cols-1 row-cols-md-1">
                 <div class="col">
-                    <div class="card m-3" style="border-radius: 15px;">
+                    <div class="card m-3">
                         <div class="card-header text-center">
                             <h6>Announcements!</h6>
                         </div>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
         </div>
-        <div class="d-flex justify-content-center shadow-lg p-3 rounded text-center" style="background-color: rgba(0, 0, 0, 0.2);margin: 0 1rem;">
+        <div class="d-flex justify-content-center shadow-lg p-3 rounded text-center">
             <div class="bg-transparent py-3 px-3 row row-cols-1 row-cols-md-3 text-white ">
                 <div class="col align-self-center"><i class="lni lni-grid-alt"></i></div>
                 <div class="col align-self-center">
@@ -83,7 +83,7 @@
             <div class="row row-cols-1 row-cols-md-2">
                 {% for issue in issues %}
                 <div class="col">
-                    <div class="card m-3 text-center" style="border-radius: 15px;">
+                    <div class="card m-3 text-center">
                         <div class="card-header">
                         Issue #{{ issue.number }} - {{ issue.project.domain }}
                         </div>
@@ -126,8 +126,8 @@
                 {% endfor %}
             </div>
         </div>
-        <div id="tabularview" class="mx-4" style="display: none;">
-            <div class="row row-cols-1 row-cols-md-2" style="margin-top: 0.8rem;">
+        <div id="tabularview" class="mx-4">
+            <div class="row row-cols-1 row-cols-md-2">
                 <table class="table">
                     <thead class="bg-dark text-white">
                         <tr class="align-middle text-center">
@@ -194,6 +194,7 @@
         $("#tabularview, #cardview").toggle();
     });
 </script>
+<link rel="stylesheet" href="../../../assets/css/style1.css">
 {% endblock %}
 
 {# TODO:ISSUE Disable Request for Assignment Button of Assigned/Closed Issue from Frontend #}
