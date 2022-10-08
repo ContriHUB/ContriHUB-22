@@ -167,9 +167,9 @@
                 >
                   {% for year in student_years %}
                     {% if year.1 == native_profile.get_current_year_display %}
-                      <option value="{{ year.0 }}" selected>{{ year.1 }}</option>
+                      <option value="{{ year.1 }}" selected>{{ year.1 }}</option>
                     {% else %}
-                      <option value="{{ year.0 }}">{{ year.1 }}</option>
+                      <option value="{{ year.1 }}">{{ year.1 }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -188,9 +188,9 @@
                 >
                   {% for course in student_courses %}
                     {% if course.1 == native_profile.get_course_display %}
-                      <option value="{{ course.0 }}" selected>{{ course.1 }}</option>
+                      <option value="{{ course.1 }}" selected>{{ course.1 }}</option>
                     {% else %}
-                      <option value="{{ course.0 }}">{{ course.1 }}</option>
+                      <option value="{{ course.1 }}">{{ course.1 }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -199,7 +199,10 @@
             </div>
           </div>
 
-          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Submit Request</button>
+          <p class="text-center font-italic edit-profile-success" style="color: darkgreen;"></p>
+          <p class="text-center font-italic edit-profile-error" style="color: crimson;"></p>
+
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto" onclick="editProfile(event);">Submit Request</button>
         </form>
       </div>
   {% endif %}

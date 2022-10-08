@@ -364,12 +364,18 @@
 
                 $('.edit-linkedin-error').text('');
                 $('.edit-linkedin-success').text('');
+
+                $('.edit-profile-error').text('');
+                $('.edit-profile-success').text('');
             }
 
             function editLinkedInID(e)
             {
                 e.preventDefault();
                 $('.edit-linkedin-error').text('');
+                $('.edit-linkedin-success').text('');
+                $('.edit-profile-error').text('');
+                $('.edit-profile-success').text('');
 
                 let linkedin_id = $('#edit-linkedin').val();
 
@@ -402,9 +408,42 @@
                     body: JSON.stringify({ 'linkedin_id': linkedin_id })
                 }).then(res => {
                     if (res.status === 200)
-                        $('.edit-linkedin-success').text('Success!');
+                        $('.edit-linkedin-success').text('Linkedin ID has been edited successfully!');
                     else
                         $('.edit-linkedin-error').text('Please try again later!');
+                });
+            }
+
+            function editProfile(e)
+            {
+                e.preventDefault();
+                $('.edit-linkedin-error').text('');
+                $('.edit-linkedin-success').text('');
+                $('.edit-profile-error').text('');
+                $('.edit-profile-success').text('');
+
+                let profile_regno = $('#edit-regno').val();
+                let profile_name = $('#edit-name').val();
+                let profile_course = $('#edit-course').val();
+                let profile_year = $('#edit-year').val();
+
+                fetch('/profile/user/edit/profile/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: JSON.stringify({ 
+                        'profile_regno': profile_regno,
+                        'profile_name': profile_name,
+                        'profile_course': profile_course,
+                        'profile_year': profile_year,
+                    })
+                }).then(res => {
+                    if (res.status === 200)
+                        $('.edit-profile-success').text('Request has been sent successfully!');
+                    else
+                        $('.edit-profile-error').text('Please try again later!');
                 });
             }
         </script>
