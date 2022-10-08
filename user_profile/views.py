@@ -87,6 +87,7 @@ def complete(request):
         existing_profile.save()
     return HttpResponseRedirect(reverse('user_profile', kwargs={'username': request.user.username}))
 
+
 @complete_profile_required
 def edit_linkedin_id(request):
     try:
@@ -94,7 +95,7 @@ def edit_linkedin_id(request):
             body = json.loads(request.body)
             if 'linkedin_id' not in body:
                 return HttpResponse(status=400)
-            
+
             existing_profile = UserProfile.objects.get(user=request.user)
             new_linkedin_id = body['linkedin_id']
             existing_profile.linkedin_id = new_linkedin_id
@@ -106,6 +107,7 @@ def edit_linkedin_id(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=400)
+
 
 @complete_profile_required
 def edit_profile(request):
@@ -149,6 +151,7 @@ def edit_profile(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=400)
+
 
 @login_required
 def rankings(request):

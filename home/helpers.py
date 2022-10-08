@@ -35,6 +35,7 @@ def send_email(template_path, email_context):
     except mail.BadHeaderError:
         return mail.BadHeaderError
 
+
 def send_email_to_admin(template_path, email_context):
     html_message = render_to_string(template_path, context=email_context)
     plain_message = strip_tags(html_message)
