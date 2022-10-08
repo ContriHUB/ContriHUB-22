@@ -399,7 +399,7 @@ Profile @{{ native_profile.user.username }}
                     return;
                 }
 
-                fetch('/profile/user/edit/linkedin_id/', {
+                fetch('/profile/user/linkedin_id/edit/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -427,7 +427,7 @@ Profile @{{ native_profile.user.username }}
                 let profile_course = $('#edit-course').val();
                 let profile_year = $('#edit-year').val();
 
-                fetch('/profile/user/edit/profile/', {
+                fetch('/profile/user/details/edit/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
