@@ -104,6 +104,12 @@
                           Domain &raquo; <button type="button" disabled class="btn btn-success btn-sm">{{ curr_domain }}</button>
                         </a>
                         <ul class="dropdown-menu dropdown-submenu">
+                          <li>
+                            <a class="dropdown-item" href="../../">
+                                <input type=input class="btn btn-small btn-success" value="All" data-filter="domain"
+                                      />
+                            </a>
+                          </li>
                           {% for domain in domains %}
                             <li>
                               <a class="dropdown-item" href="{% url 'filter_by_domain' domain.pk %}">
@@ -119,6 +125,12 @@
                           SubDomain &raquo; <button type="button" disabled class="btn btn-danger btn-sm">{{ curr_subdomain }}</button>
                         </a>
                         <ul class="dropdown-menu dropdown-submenu">
+                          <li>
+                            <a class="dropdown-item" href="../../">
+                                <input type=input class="btn btn-small btn-danger" value="All" data-filter="domain"
+                                      />
+                            </a>
+                          </li>
                           {% for subdomain in subdomains %}
                             <li>
                               <a class="dropdown-item" href="{% url 'filter_by_subdomain' subdomain.pk %}">
