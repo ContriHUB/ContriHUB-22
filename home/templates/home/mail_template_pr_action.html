@@ -1,0 +1,22 @@
+{% comment %}
+    context = {
+        'contributor': contributor,
+        'url': url,
+        'issue': issue,
+        'action': 'accepted/rejected',
+        'mentor': mentor.username,
+        'subject': "PR Accepted/Rejected under ContriHUB-22.",
+    }
+{% endcomment %}
+{% autoescape off %}
+<br>
+Hi there! <b>{{ user }}</b>,<br><br>
+
+Your <a href={{ url }}>Pull Request</a> for Issue <a href={{ issue.html_url }}>
+    {{ issue.number }}</a> of Project <a href={{ issue.project.html_url }}>{{ issue.project.name }}</a>
+    has been {{ action }} by mentor, {{ mentor }}.
+    <br>
+    <br>
+Sincerely,<br>
+ContriHUB-22 Team<br>
+{% endautoescape %}
