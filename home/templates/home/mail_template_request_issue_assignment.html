@@ -4,7 +4,8 @@
         'user': email_context.user.username,
         'url': email_context.url,
         'protocol': ,
-        'host': request.get_host()
+        'host': request.get_host(),
+        'receiver': issue.mentor
     }
 {% endcomment %}
 {% autoescape off %}
@@ -20,5 +21,5 @@ If clicking on any of the link above doesn't work, please copy and paste the URL
 window instead.<br><br>
 
 Sincerely,<br>
-ContriHUB-21 Team<br>
+ContriHUB-22 Team<br>
 {% endautoescape %}

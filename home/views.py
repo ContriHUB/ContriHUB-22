@@ -116,6 +116,7 @@ def request_issue_assignment(request, issue_pk):
             'protocol': request.build_absolute_uri().split('://')[0],
             'host': request.get_host(),
             'subject': "Request for Issue Assignment under ContriHUB-22.",
+            'receiver': issue.mentor,
         }
         try:
             send_email(template_path=template_path, email_context=email_context)
@@ -200,6 +201,7 @@ def submit_pr_request(request, active_issue_pk):
                     'protocol': request.build_absolute_uri().split('://')[0],
                     'host': request.get_host(),
                     'subject': "Request for Approval of PR on an issue under ContriHUB-22.",
+                    'receiver': issue.mentor,
                 }
                 try:
                     send_email(template_path=template_path, email_context=email_context)
@@ -249,6 +251,25 @@ def accept_pr(request, pk):
                 pr.accept()
                 message = f"Successfully accepted <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
                           f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
+                template_path = "home/mail_template_pr_action.html"
+                email_context = {
+                    'mentor': issue.mentor,
+                    'user': contributor,
+                    'url': pr.pr_link,
+                    'protocol': request.build_absolute_uri().split('://')[0],
+                    'host': request.get_host(),
+                    'issue': issue,
+                    'action': 'accepted',
+                    'subject': "PR Accepted under ContriHUB-22.",
+                    'receiver': contributor,
+                }
+                try:
+                    send_email(template_path=template_path, email_context=email_context)
+                    return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
+                                        {contributor}).")
+                except mail.BadHeaderError:
+                    return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email to the\
+                                        contributor("f"{contributor}).")
             else:
                 message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
                             still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
@@ -278,6 +299,25 @@ def reject_pr(request, pk):
                 pr.reject()
                 message = f"Successfully rejected <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
                           f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
+                template_path = "home/mail_template_pr_action.html"
+                email_context = {
+                    'mentor': issue.mentor,
+                    'user': contributor,
+                    'url': pr.pr_link,
+                    'protocol': request.build_absolute_uri().split('://')[0],
+                    'host': request.get_host(),
+                    'issue': issue,
+                    'action': 'rejected',
+                    'subject': "PR Rejected under ContriHUB-22.",
+                    'receiver': contributor,
+                }
+                try:
+                    send_email(template_path=template_path, email_context=email_context)
+                    return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
+                                        {contributor}).")
+                except mail.BadHeaderError:
+                    return HttpResponse(f"PR rejected successfully, but there was some problem sending email to the\
+                                        contributor("f"{contributor}).")
             else:
                 message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You \
                             still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in \
