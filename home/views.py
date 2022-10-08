@@ -19,6 +19,7 @@ from django.utils import timezone
 # TODO:ISSUE: Up-vote Down-vote Issue Feature
 from user_profile.models import UserProfile
 
+
 @complete_profile_required
 def home(request):
     global issues_qs, domain, subdomain
@@ -33,7 +34,7 @@ def home(request):
         'issues': issues_qs,
         'domains': domains_qs,
         'subdomains': subdomains_qs,
-        'curr_domain': domain,        
+        'curr_domain': domain,
         'curr_subdomain': subdomain
     }
     return render(request, 'home/index.html', context=context)
@@ -64,7 +65,7 @@ def filter_by_subdomain(request, subdomain_pk):
     global issues_qs, domain, subdomain
     subdomain = SubDomain.objects.get(pk=subdomain_pk)
     project_qs = Project.objects.all()
-    if domain is not 'All':
+    if domain != 'All':
         issues_qs = Issue.objects.filter(project__domain=domain)
     issues_qs = issues_qs.filter(project__subdomain=subdomain)
     domains_qs = Domain.objects.all()
