@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from project.models import Issue, PullRequest, IssueAssignmentRequest, ActiveIssue
 from .forms import UserProfileForm
 from .models import UserProfile
+from home.helpers import send_email_to_admin
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm
 import json
@@ -128,10 +129,19 @@ def edit_profile(request):
                 return HttpResponse(status=400)
             new_year = body['profile_year']
 
-            print(new_course)
-            print(new_name)
-            print(new_regno)
-            print(new_year)
+            user = request.user
+            template_path = "user_profile/mail_template_request_profile_edit.html"
+            email_context = {
+                'username': user.username,
+                'protocol': request.build_absolute_uri().split('://')[0],
+                'host': request.get_host(),
+                'subject': f"Request for Profile Edit by {user.username}",
+                'new_regno': new_regno,
+                'new_name': new_name,
+                'new_course': new_course,
+                'new_year': new_year,
+            }
+            send_email_to_admin(template_path=template_path, email_context=email_context)
 
             return HttpResponse(status=200)
         else:

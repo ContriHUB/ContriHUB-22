@@ -34,3 +34,16 @@ def send_email(template_path, email_context):
                        fail_silently=False)
     except mail.BadHeaderError:
         return mail.BadHeaderError
+
+def send_email_to_admin(template_path, email_context):
+    html_message = render_to_string(template_path, context=email_context)
+    plain_message = strip_tags(html_message)
+
+    from_email = "noreply@contriHUB-21"
+    to = "contrihub.avishkar@gmail.com"
+
+    try:
+        mail.send_mail(email_context['subject'], plain_message, from_email, [to], html_message=html_message,
+                       fail_silently=False)
+    except mail.BadHeaderError:
+        return mail.BadHeaderError
