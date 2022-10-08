@@ -132,7 +132,7 @@
             <label class="form-label" for="edit-linkedin">LinkedIn ID</label>
           </div>
         
-          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto">Edit</button>
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto" onclick="editLinkedInID(event);">Edit</button>
 
           <p class="text-center font-italic">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
 
@@ -154,7 +154,14 @@
           <div class="row mb-4">
             <div class="col-12 col-md-6">
               <div class="form-outline">
-                <select class="form-control" id="edit-year">
+                <select 
+                  class="form-control" 
+                  id="edit-year" 
+                  style="
+                    border-radius: 0.25rem;
+                    border: 1px solid #bdbdbd;
+                  "
+                >
                   {% for year in student_years %}
                     {% if year.1 == native_profile.get_current_year_display %}
                       <option value="{{ year.0 }}" selected>{{ year.1 }}</option>
@@ -163,12 +170,19 @@
                     {% endif %}
                   {% endfor %}
                 </select>
-                <label class="form-label" for="edit-year">Year</label>
+                <label class="form-label" for="edit-year" style="transform: translateY(-1rem) translateY(0.1rem) scale(.8);">Year</label>
               </div>
             </div>
             <div class="col-12 col-md-6 mt-2 mt-md-0">
               <div class="form-outline">
-                <select class="form-control" id="edit-course">
+                <select 
+                  class="form-control" 
+                  id="edit-course" 
+                  style="
+                    border-radius: 0.25rem;
+                    border: 1px solid #bdbdbd;
+                  "
+                >
                   {% for course in student_courses %}
                     {% if course.1 == native_profile.get_course_display %}
                       <option value="{{ course.0 }}" selected>{{ course.1 }}</option>
@@ -177,7 +191,7 @@
                     {% endif %}
                   {% endfor %}
                 </select>
-                <label class="form-label" for="edit-course">Course</label>
+                <label class="form-label" for="edit-course" style="transform: translateY(-1rem) translateY(0.1rem) scale(.8);">Course</label>
               </div>
             </div>
           </div>
