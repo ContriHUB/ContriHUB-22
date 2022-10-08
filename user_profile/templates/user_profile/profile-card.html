@@ -120,7 +120,7 @@
         >
           <div class="row">
             <div class="col-10 text-center">
-              <p class="text-center font-italic">LinkedIn Profile ID can be edited immediately</p>
+              <p class="text-center font-weight-bold">LinkedIn Profile ID can be edited immediately</p>
             </div>
             <div class="col-2 d-flex justify-content-end">
               <i role='button' class="fas fa-times-circle" onclick="toggleEditProfileModal();"></i>
@@ -131,10 +131,13 @@
             <input type="url" id="edit-linkedin" class="form-control" value="{{ native_profile.linkedin_id }}" placeholder="Enter your LinkedIn ID" />
             <label class="form-label" for="edit-linkedin">LinkedIn ID</label>
           </div>
+
+          <p class="text-center font-italic edit-linkedin-success" style="color: darkgreen;"></p>
+          <p class="text-center font-italic edit-linkedin-error" style="color: crimson;"></p>
         
           <button class="btn btn-primary btn-block mb-4 w-75 mx-auto" onclick="editLinkedInID(event);">Edit</button>
 
-          <p class="text-center font-italic">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
+          <p class="text-center font-weight-bold">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
 
           <div class="row mb-2">
             <div class="col-12 col-md-6">
