@@ -87,7 +87,7 @@ def complete(request):
             # TODO:ISSUE Backend Check on Registration Number
             existing_profile = form.save(commit=False)
             existing_profile.linkedin_id = request.POST['linkedin_id']
-            regex = ("^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
+            regex = (r"^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
             if re.fullmatch(regex, existing_profile.linkedin_id):
                 existing_profile.is_complete = True
                 existing_profile.save()
@@ -111,7 +111,7 @@ def edit_linkedin_id(request):
 
             existing_profile = UserProfile.objects.get(user=request.user)
             new_linkedin_id = body['linkedin_id']
-            regex = ("^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
+            regex = (r"^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
             if re.fullmatch(regex, new_linkedin_id):
                 existing_profile.linkedin_id = new_linkedin_id
                 existing_profile.save()
