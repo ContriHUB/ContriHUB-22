@@ -11,6 +11,9 @@ DEBUG = True
 SOCIAL_AUTH_GITHUB_KEY = '<enter_client_id>'
 SOCIAL_AUTH_GITHUB_SECRET = '<enter_secret_id>'
 
+# make sure while entering EMAIL_HOST_PASSWORD you should not write your
+# original password instead make a "App password" in your gmail account and enter that password
+
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = '<enter_email>'
