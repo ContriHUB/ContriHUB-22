@@ -15,7 +15,6 @@ from django.conf import settings
 
 
 def send_email(template_path, email_context):
-    # print(email_context)
     context = {
         'mentor': email_context['mentor'].username,
         'user': email_context['user'].username,
