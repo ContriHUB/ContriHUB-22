@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, Issue, PullRequest, IssueAssignmentRequest, ActiveIssue
+from .models import Project, Issue, PullRequest, IssueAssignmentRequest, ActiveIssue, Domain, SubDomain
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -27,3 +27,5 @@ admin.site.register(Issue, IssueAdmin)
 admin.site.register(PullRequest, PullRequestAdmin)
 admin.site.register(IssueAssignmentRequest, IssueAssignmentRequestAdmin)
 admin.site.register(ActiveIssue, ActiveIssueAdmin)
+admin.site.register(Domain)
+admin.site.register(SubDomain)

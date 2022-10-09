@@ -1,5 +1,23 @@
 <!-- Navbar -->
 {% load static %}
+<style>
+  .dropdown-menu li {
+    position: relative;
+    }
+    .dropdown-menu .dropdown-submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -7px;
+    }
+    .dropdown-menu .dropdown-submenu-left {
+    right: 100%;
+    left: auto;
+    }
+    .dropdown-menu > li:hover > .dropdown-submenu {
+    display: block;
+    } 
+</style>
 <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
   <!-- Container wrapper -->
   <div class="container-fluid">
@@ -74,6 +92,56 @@
                         {% endfor %}
                       </ul>
                     </div>
+                  </li>
+                  <li class="nav-item dropdown mt-2">
+                    <button class="btn btn-primary btn-rounded dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-mdb-toggle="dropdown" aria-expanded="false">
+                      Filter By
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <li>
+                        <a class="dropdown-item" href="#">
+                          Domain &raquo; <button type="button" disabled class="btn btn-success btn-sm">{{ curr_domain }}</button>
+                        </a>
+                        <ul class="dropdown-menu dropdown-submenu">
+                          <li>
+                            <a class="dropdown-item" href="../../">
+                                <input type=input class="btn btn-small btn-success" value="All" data-filter="domain"
+                                      />
+                            </a>
+                          </li>
+                          {% for domain in domains %}
+                            <li>
+                              <a class="dropdown-item" href="{% url 'filter_by_domain' domain.pk %}">
+                                  <input type=input class="btn btn-small btn-outline-success" value="{{ domain }}" data-filter="domain"
+                                        />
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="#">
+                          SubDomain &raquo; <button type="button" disabled class="btn btn-danger btn-sm">{{ curr_subdomain }}</button>
+                        </a>
+                        <ul class="dropdown-menu dropdown-submenu">
+                          <li>
+                            <a class="dropdown-item" href="../../">
+                                <input type=input class="btn btn-small btn-danger" value="All" data-filter="domain"
+                                      />
+                            </a>
+                          </li>
+                          {% for subdomain in subdomains %}
+                            <li>
+                              <a class="dropdown-item" href="{% url 'filter_by_subdomain' subdomain.pk %}">
+                                  <input type=input class="btn btn-outline-danger" value="{{ subdomain }}" data-filter="subdomain"
+                                        />
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </li>
+                    </ul>
                   </li>
             </ul>
         {% endif %}
