@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, reverse, redirect
 
 from home.helpers import send_email
 from django.core import mail
@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm
 from django.utils import timezone
+from django.contrib import messages
+from django.utils.html import format_html
 
 
 # TODO:ISSUE: Replace each HttpResponse with a HTML page
@@ -123,17 +125,22 @@ def request_issue_assignment(request, issue_pk):
         try:
             send_email(template_path=template_path, email_context=email_context)
             # TODO:ISSUE: Create Html Template for HttpResponses in home/views.py
-            return HttpResponse(f"Issue Requested Successfully. Email Request Sent to the Mentor(\
-                                {issue.mentor.username}). Keep your eye out on your profile.")
+            message = f"Issue Requested Successfully. Email Request Sent to the Mentor(\
+                                {issue.mentor.username}). Keep your eye out on your profile."
+            messages.success(request, message)
+            return redirect('home')
         except mail.BadHeaderError:
             linkedin_id = UserProfile.objects.get(user=issue.mentor).linkedin_id
-            return HttpResponse(f"Issue Requested Successfully, but there was some problem sending email to the\
+            message = f"Issue Requested Successfully, but there was some problem sending email to the\
                                 mentor("f"{issue.mentor.username}). For quick response from mentor try contacting\
-                                him/her on Linkedin({linkedin_id})")
+                                him/her on Linkedin({linkedin_id})"
+            messages.success(request, message)
+            return redirect('home')
 
     message = f"Assignment Request for <a href={issue.html_url}>Issue #{issue.number}</a> of <a href=\
               {issue.project.html_url}>" f"{issue.project.name}</a> cannot be made by you currently."
-    return HttpResponse(message)
+    messages.error(request, format_html(message))
+    return redirect('home')
 
 
 @login_required
@@ -149,10 +156,12 @@ def accept_issue_request(request, issue_req_pk):
         # TODO:ISSUE Send Email to Student that their request is accepted
         message = f"Issue <a href={issue.html_url}>#{issue.number}</a> of Project <a href={issue.project.html_url}>" \
                   f"{issue.project.name}</a> successfully assigned to {requester}"
-        return HttpResponse(message)
+        messages.success(request, format_html(message))
+        return redirect('user_profile', username=request.user)
     else:
-        message = "This Issue Cannot be accepted by you! Probably it's already Accepted/Rejected."
-        return HttpResponse(message)
+        message = "This issue cannot be accepted by you! Probably it's already Accepted/Rejected."
+        messages.error(request, message)
+        return redirect('user_profile', username=request.user)
 
 
 def reject_issue_request(request, issue_req_pk):
@@ -165,7 +174,8 @@ def reject_issue_request(request, issue_req_pk):
     issue_request.save()
     message = f"Issue <a href={issue.html_url}>#{issue.number}</a> of Project <a href={issue.project.html_url}>" \
               f"{issue.project.name}</a> is rejected for {requester}"
-    return HttpResponse(message)
+    messages.success(request, format_html(message))
+    return redirect('user_profile', username=request.user)
 
 
 @login_required
@@ -212,21 +222,25 @@ def submit_pr_request(request, active_issue_pk):
                     message = f"Email Request Sent to the Mentor({issue.mentor.username}). PR Verification Request\
                               Successfully Submitted for <a href={issue.html_url}>Issue #" f"{issue.number}\
                               </a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
+
                 except mail.BadHeaderError:
                     ms_teams_id = UserProfile.objects.get(user=issue.mentor).ms_teams_id
                     message = f"PR Verification Request Successfully Submitted for <a href={issue.html_url}>Issue #" \
                               f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}\
                               </a>. But there was some problem sending email to the mentor({issue.mentor.username})\
                               . For quick response from mentor try contacting him/her on MS-Teams({ms_teams_id})"
-                return HttpResponse(message)
+                messages.success(request, format_html(message))
+                return redirect('user_profile', username=request.user)
             else:
                 message = f"This request cannot be full-filled. Probably you already submitted PR verification\
-                          request " f"for <a href={issue.html_url}>Issue #{issue.number}</a> of Project <a href=" \
+                           request " f"for <a href={issue.html_url}>Issue #{issue.number}</a> of Project <a href=" \
                           f"{issue.project.html_url}>{issue.project.name}</a>"
-            return HttpResponse(message)
+            messages.error(request, format_html(message))
+            return redirect('user_profile', username=request.user)
 
     message = "This request cannot be full-filled."
-    return HttpResponse(message)
+    messages.error(request, format_html(message))
+    return redirect('user_profile', username=request.user)
 
 
 # TODO:ISSUE: Implement Functionality for mentor to assign bonus/peanlty points while accepting/rejecting the \
@@ -269,11 +283,16 @@ def accept_pr(request, pk):
                 }
                 try:
                     send_email(template_path=template_path, email_context=email_context)
-                    return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
-                                        {contributor}).")
+                    message = f"PR Accepted Successfully. Email sent to the contributor(\
+                                        {contributor})."
+                    messages.success(request, message)
+                    return redirect('user_profile', username=request.user)
+
                 except mail.BadHeaderError:
-                    return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email to the\
-                                        contributor("f"{contributor}).")
+                    message = f"PR Accepted Successfully, but there was some problem sending email to the\
+                                        contributor("f"{contributor})."
+                    messages.success(request, message)
+                    return redirect('user_profile', username=request.user)
             else:
                 message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
                             still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
@@ -284,7 +303,8 @@ def accept_pr(request, pk):
     else:
         message = "This PR is probably already Accepted. Probably in the FrontEnd You still see the " \
                   "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
-    return HttpResponse(message)
+    messages.error(request, format_html(message))
+    return redirect('user_profile', username=request.user)
 
 
 @login_required
@@ -317,19 +337,24 @@ def reject_pr(request, pk):
                 }
                 try:
                     send_email(template_path=template_path, email_context=email_context)
-                    return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
-                                        {contributor}).")
+                    message = f"PR rejected successfully. Email sent to the contributor(\
+                                        {contributor})."
+                    messages.success(request, message)
+                    return redirect('user_profile', username=request.user)
                 except mail.BadHeaderError:
-                    return HttpResponse(f"PR rejected successfully, but there was some problem sending email to the\
-                                        contributor("f"{contributor}).")
+                    message = f"PR rejected successfully, but there was some problem sending email to the\
+                                        contributor("f"{contributor})."
+                    messages.success(request, message)
+                    return redirect('user_profile', username=request.user)
             else:
                 message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You \
-                            still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in \
+                            still see the Accept/Reject Button, because showing ACCEPTED/REJECTED status in \
                             frontend is an ISSUE."
         else:
             message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project <a href=" \
                       f"{issue.project.html_url}>{issue.project.name}</a>"
     else:
-        message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You still see \
-                    the "  "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
-    return HttpResponse(message)
+        message = "This PR Verification Request is already Accepted/Rejected. Probably in the frontend you still see \
+                    the Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
+    messages.error(request, format_html(message))
+    return redirect('user_profile', username=request.user)

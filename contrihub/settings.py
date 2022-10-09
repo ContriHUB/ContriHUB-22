@@ -2,6 +2,7 @@ from decouple import config
 import dj_database_url
 from pathlib import Path
 import os
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -176,3 +177,7 @@ DEFAULT_VERY_EASY_POINTS = config('DEFAULT_VERY_EASY_POINTS', default=2, cast=in
 DEFAULT_EASY_POINTS = config('DEFAULT_EASY_POINTS', default=10, cast=int)
 DEFAULT_MEDIUM_POINTS = config('DEFAULT_MEDIUM_POINTS', default=20, cast=int)
 DEFAULT_HARD_POINTS = config('DEFAULT_HARD_POINTS', default=30, cast=int)
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
