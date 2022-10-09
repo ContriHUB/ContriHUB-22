@@ -97,7 +97,7 @@ def complete(request):
                     'form': form,
                 }
                 existing_profile.is_complete = False
-                messages.add_message(request, messages.ERROR, "Enter valid linkedin_id")
+                messages.add_message(request, messages.ERROR, "Enter valid LinkedIn id")
                 return render(request, 'user_profile/complete_profile.html', context=context)
 
 
