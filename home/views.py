@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 
-from home.helpers import send_email
+from home.helpers import send_email,EmailThread
 from django.core import mail
 
 from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest, Domain, SubDomain
@@ -121,7 +121,7 @@ def request_issue_assignment(request, issue_pk):
             'receiver': issue.mentor,
         }
         try:
-            send_email(template_path=template_path, email_context=email_context)
+            EmailThread(template_path, email_context).start()
             # TODO:ISSUE: Create Html Template for HttpResponses in home/views.py
             return HttpResponse(f"Issue Requested Successfully. Email Request Sent to the Mentor(\
                                 {issue.mentor.username}). Keep your eye out on your profile.")
