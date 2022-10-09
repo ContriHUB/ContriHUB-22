@@ -104,7 +104,7 @@ def edit_linkedin_id(request):
             return HttpResponse(status=200)
         else:
             return HttpResponse(status=400)
-    except Exception as e:
+    except Exception:
         return HttpResponse(status=400)
 
 
@@ -147,7 +147,7 @@ def edit_profile(request):
             return HttpResponse(status=200)
         else:
             return HttpResponse(status=400)
-    except Exception as e:
+    except Exception:
         return HttpResponse(status=400)
 
 
