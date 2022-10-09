@@ -408,7 +408,10 @@ Profile @{{ native_profile.user.username }}
                     body: JSON.stringify({ 'linkedin_id': linkedin_id })
                 }).then(res => {
                     if (res.status === 200)
+                    {
+                        $('.profile-card-linkedin-id').text(linkedin_id);
                         $('.edit-linkedin-success').text('Linkedin ID has been edited successfully!');
+                    }
                     else
                         $('.edit-linkedin-error').text('Please try again later!');
                 });
