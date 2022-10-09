@@ -7,7 +7,9 @@ from .models import UserProfile
 from home.helpers import send_email_to_admin
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm
+from django.contrib import messages
 import json
+import re
 
 User = get_user_model()
 
@@ -80,12 +82,23 @@ def complete(request):
         return render(request, 'user_profile/complete_profile.html', context=context)
 
     form = UserProfileForm(request.POST, instance=existing_profile)
-    if form.is_valid():
-        # TODO:ISSUE Backend Check on Registration Number
-        existing_profile = form.save(commit=False)
-        existing_profile.is_complete = True
-        existing_profile.save()
-    return HttpResponseRedirect(reverse('user_profile', kwargs={'username': request.user.username}))
+    if request.method == "POST":
+        if form.is_valid():
+            # TODO:ISSUE Backend Check on Registration Number
+            existing_profile = form.save(commit=False)
+            existing_profile.linkedin_id = request.POST['linkedin_id']
+            regex = ("^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
+            if re.fullmatch(regex, existing_profile.linkedin_id):
+                existing_profile.is_complete = True
+                existing_profile.save()
+                return HttpResponseRedirect(reverse('user_profile', kwargs={'username': request.user.username}))
+            else:
+                context = {
+                    'form': form,
+                }
+                existing_profile.is_complete = False
+                messages.add_message(request, messages.ERROR, "Enter valid linkedin_id")
+                return render(request, 'user_profile/complete_profile.html', context=context)
 
 
 @complete_profile_required
@@ -98,10 +111,13 @@ def edit_linkedin_id(request):
 
             existing_profile = UserProfile.objects.get(user=request.user)
             new_linkedin_id = body['linkedin_id']
-            existing_profile.linkedin_id = new_linkedin_id
-            existing_profile.save()
-
-            return HttpResponse(status=200)
+            regex = ("^https?://((www|\w\w)\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\w|\d)+/?){3}))$")
+            if re.fullmatch(regex, new_linkedin_id):
+                existing_profile.linkedin_id = new_linkedin_id
+                existing_profile.save()
+                return HttpResponse(status=200)
+            else:
+                return HttpResponse(status=400)
         else:
             return HttpResponse(status=400)
     except Exception:

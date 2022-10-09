@@ -13,6 +13,13 @@
     <div class="text-center text-white">
         <h1 class="display-6 text-white">Enter Following Information</h1>
         <form method="post" action="{% url 'complete_profile' %}">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             {% csrf_token %}
             <table class="d-inline-flex justify-content-center" border="2" cellspacing="5" cellpadding="10">
                 {{ form.as_table }}
