@@ -86,6 +86,9 @@
                     <div class="card m-3 text-center" style="border-radius: 15px;">
                         <div class="card-header">
                         Issue #{{ issue.number }} - {{ issue.project.domain }}
+                        {% if issue.project.subdomain != None %}
+                            ({{ issue.project.subdomain }})
+                        {% endif %}
                         </div>
                         <div class="card-body">
 
