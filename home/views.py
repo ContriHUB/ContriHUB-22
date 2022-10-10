@@ -1,13 +1,13 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 
-from home.helpers import send_email,EmailThread
+from home.helpers import send_email, EmailThread
 from django.core import mail
-
 from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest, Domain, SubDomain
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm
+
 from django.utils import timezone
 
 
@@ -102,8 +102,10 @@ def logout_(request):
 def request_issue_assignment(request, issue_pk):
     issue = Issue.objects.get(pk=issue_pk)
     requester = request.user
-
+    print(issue)
+    print(requester)
     if issue.is_assignable(requester=requester):
+
         IssueAssignmentRequest.objects.create(issue=issue, requester=requester)
         message = f"Assignment Request for Issue <a href={issue.html_url}>#{issue.number}</a> of " \
                   f"<a href={issue.project.html_url}>{issue.project.name}</a> submitted successfully. "
