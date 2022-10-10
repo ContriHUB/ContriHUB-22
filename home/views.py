@@ -7,7 +7,7 @@ from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, 
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
-from project.forms import PRSubmissionForm
+from project.forms import PRSubmissionForm, PRJudgeForm
 from django.utils import timezone
 
 
@@ -237,99 +237,81 @@ def submit_pr_request(request, active_issue_pk):
 # TODO:ISSUE: Implement a feature such that mentor is able to leave remarks about PR before Accepting/Rejecting\
 #  (Some fields in Model need to be added/updated).
 
-
 @login_required
 @complete_profile_required
-def accept_pr(request, pk):
-    mentor = request.user
-    pr_qs = PullRequest.objects.filter(pk=pk)
-    if pr_qs:
-        pr = pr_qs.first()
-        issue = pr.issue
+def judge_pr(request, pk):
+    if request.method == 'GET':
+        mentor = request.user
+        pr_qs = PullRequest.objects.filter(pk=pk)
+        if pr_qs:
+            pr = pr_qs.first()
+            issue = pr.issue
 
-        if mentor.username == issue.mentor.username:
-            contributor = pr.contributor
+            if mentor.username == issue.mentor.username:
+                contributor = pr.contributor
 
-            pr = PullRequest.objects.get(issue=issue, contributor=contributor)
-            if pr.state == PullRequest.PENDING_VERIFICATION:
-                pr.accept()
-                message = f"Successfully accepted <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
-                          f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
-                template_path = "home/mail_template_pr_action.html"
-                email_context = {
-                    'mentor': issue.mentor,
-                    'user': contributor,
-                    'url': pr.pr_link,
-                    'protocol': request.build_absolute_uri().split('://')[0],
-                    'host': request.get_host(),
-                    'issue': issue,
-                    'action': 'accepted',
-                    'subject': "PR Accepted under ContriHUB-22.",
-                    'receiver': contributor,
-                }
-                try:
-                    send_email(template_path=template_path, email_context=email_context)
-                    return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
-                                        {contributor}).")
-                except mail.BadHeaderError:
-                    return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email to the\
-                                        contributor("f"{contributor}).")
+                pr = PullRequest.objects.get(issue=issue, contributor=contributor)
+                form = PRJudgeForm(request.GET)
+                if pr.state == PullRequest.PENDING_VERIFICATION and form.is_valid() and "accept" in request.GET:
+                    bonus = form.cleaned_data['bonus']
+                    penalty = form.cleaned_data['penalty']
+                    remark = form.cleaned_data['remark']
+                    pr.accept(bonus=bonus, penalty=penalty, remark=remark)
+                    message = f"Successfully accepted <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
+                        f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
+                    template_path = "home/mail_template_pr_action.html"
+                    email_context = {
+                        'mentor': issue.mentor,
+                        'user': contributor,
+                        'url': pr.pr_link,
+                        'protocol': request.build_absolute_uri().split('://')[0],
+                        'host': request.get_host(),
+                        'issue': issue,
+                        'action': 'accepted',
+                        'subject': "PR Accepted under ContriHUB-22.",
+                        'receiver': contributor,
+                    }
+                    try:
+                        send_email(template_path=template_path, email_context=email_context)
+                        return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
+                                            {contributor}).")
+                    except mail.BadHeaderError:
+                        return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email to the\
+                                            contributor("f"{contributor}).")
+                elif pr.state == PullRequest.PENDING_VERIFICATION and form.is_valid() and "reject" in request.GET:
+                    bonus = form.cleaned_data['bonus']
+                    penalty = form.cleaned_data['penalty']
+                    remark = form.cleaned_data['remark']
+                    pr.reject(bonus=bonus, penalty=penalty, remark=remark)
+                    message = f"Successfully rejected <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
+                        f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
+                    template_path = "home/mail_template_pr_action.html"
+                    email_context = {
+                        'mentor': issue.mentor,
+                        'user': contributor,
+                        'url': pr.pr_link,
+                        'protocol': request.build_absolute_uri().split('://')[0],
+                        'host': request.get_host(),
+                        'issue': issue,
+                        'action': 'rejected',
+                        'subject': "PR Rejected under ContriHUB-22.",
+                        'receiver': contributor,
+                    }
+                    try:
+                        send_email(template_path=template_path, email_context=email_context)
+                        return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
+                                            {contributor}).")
+                    except mail.BadHeaderError:
+                        return HttpResponse(f"PR rejected successfully, but there was some problem sending email to the\
+                                            contributor("f"{contributor}).")
+                else:
+                    message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
+                                still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
+                                frontend is an ISSUE."
             else:
-                message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
-                            still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
-                            frontend is an ISSUE."
+                message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project \
+                     <a href="f"{issue.project.html_url}>{issue.project.name}</a>"
         else:
-            message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project <a href=" \
-                      f"{issue.project.html_url}>{issue.project.name}</a>"
-    else:
-        message = "This PR is probably already Accepted. Probably in the FrontEnd You still see the " \
-                  "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
-    return HttpResponse(message)
-
-
-@login_required
-@complete_profile_required
-def reject_pr(request, pk):
-    mentor = request.user
-    pr_qs = PullRequest.objects.filter(pk=pk)
-    if pr_qs:
-        pr = pr_qs.first()
-        issue = pr.issue
-
-        if mentor.username == issue.mentor.username:
-            contributor = pr.contributor
-            pr = PullRequest.objects.get(issue=issue, contributor=contributor)
-            if pr.state == PullRequest.PENDING_VERIFICATION:
-                pr.reject()
-                message = f"Successfully rejected <a href={pr.pr_link}>PR</a> of Issue <a href={issue.html_url}>" \
-                          f"{issue.number}</a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
-                template_path = "home/mail_template_pr_action.html"
-                email_context = {
-                    'mentor': issue.mentor,
-                    'user': contributor,
-                    'url': pr.pr_link,
-                    'protocol': request.build_absolute_uri().split('://')[0],
-                    'host': request.get_host(),
-                    'issue': issue,
-                    'action': 'rejected',
-                    'subject': "PR Rejected under ContriHUB-22.",
-                    'receiver': contributor,
-                }
-                try:
-                    send_email(template_path=template_path, email_context=email_context)
-                    return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
-                                        {contributor}).")
-                except mail.BadHeaderError:
-                    return HttpResponse(f"PR rejected successfully, but there was some problem sending email to the\
-                                        contributor("f"{contributor}).")
-            else:
-                message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You \
-                            still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in \
-                            frontend is an ISSUE."
-        else:
-            message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project <a href=" \
-                      f"{issue.project.html_url}>{issue.project.name}</a>"
-    else:
-        message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You still see \
-                    the "  "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
-    return HttpResponse(message)
+            message = "This PR is probably already Accepted. Probably in the FrontEnd You still see the " \
+                    "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
+        return HttpResponse(message)

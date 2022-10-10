@@ -6,7 +6,7 @@ from .forms import UserProfileForm
 from .models import UserProfile
 from home.helpers import send_email_to_admin
 from helper import complete_profile_required, check_issue_time_limit
-from project.forms import PRSubmissionForm
+from project.forms import PRJudgeForm, PRSubmissionForm
 import json
 
 User = get_user_model()
@@ -42,6 +42,7 @@ def profile(request, username):
             pr_requests_for_mentor = PullRequest.objects.filter(issue__mentor=user)
 
             pr_form = PRSubmissionForm()
+            judge_form = PRJudgeForm()
 
             context = {
                 "student_years": UserProfile.YEARS,
@@ -53,6 +54,7 @@ def profile(request, username):
                 "assignment_requests_by_student": assignment_requests_by_student,
                 "assignment_requests_for_mentor": assignment_requests_for_mentor,
                 'pr_form': pr_form,
+                "judge_form": judge_form,
                 "native_profile": native_profile
             }
             return render(request, 'user_profile/profile.html', context=context)

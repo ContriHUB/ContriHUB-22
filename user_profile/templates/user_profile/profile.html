@@ -205,25 +205,35 @@ Profile @{{ native_profile.user.username }}
 
                                   </div>
                                     <div class="card-footer text-muted">
-                                        {% if pr.state == pr.ACCEPTED %}
-                                            <a class="btn btn-rounded btn-success">{{ pr.get_state_display }}</a>
-                                        {% elif pr.state == pr.REJECTED %}
-                                            <a class="btn btn-rounded btn-danger">{{ pr.get_state_display }}</a>
-                                        {% elif pr.state == pr.PENDING_VERIFICATION %}
-                                            <a class="btn btn-rounded btn-warning">{{ pr.get_state_display }}</a>
-                                        {% endif %}
-                                    {# TODO: ISSUE: Disable these buttons from Frontend if PR is already accepted/rejected #}
-                                        <button class="btn btn-success mt-0">
-                                            <a class="text-white" href="{% url 'accept_pr' pr.pk %}">
-                                                Accept
-                                            </a>
-                                        </button>
-                                        <button class="btn btn-danger mt-0">
-                                            <a class="text-white" href="{% url 'reject_pr' pr.pk %}">Reject</a>
-                                        </button>
                                         <button class="btn btn-primary btn-rounded mt-0" data-mdb-toggle="tooltip" title="View PR">
                                             <a class="text-white" href="{{ pr.pr_link }}"><i class="fas fa-eye"></i></a>
                                         </button>
+                                        {% if pr.state == pr.ACCEPTED %}
+                                            <a class="btn btn-rounded btn-success">{{ pr.get_state_display }}</a>
+                                            <form method="get" action="">
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Bonus Points">{{ pr.bonus }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Penalty Points">{{ pr.penalty }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Remark">{{ pr.remark }}</a>
+                                            </form>
+                                        {% elif pr.state == pr.REJECTED %}
+                                            <a class="btn btn-rounded btn-danger">{{ pr.get_state_display }}</a>
+                                            <form method="get" action="">
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Bonus Points">{{ pr.bonus }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Penalty Points">{{ pr.penalty }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Remark">{{ pr.remark }}</a>
+                                            </form>
+                                        {% elif pr.state == pr.PENDING_VERIFICATION %}
+                                            <a class="btn btn-rounded btn-warning">{{ pr.get_state_display }}</a>
+                                            <form method="get" action="{% url 'judge_pr' pr.pk %}">
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Bonus Points">{{ judge_form.bonus }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Penalty Points">{{ judge_form.penalty }}</a>
+                                                <a class="btn btn-primary" data-mdb-toggle="tooltip" title="Remark">{{ judge_form.remark }}</a>
+                                                <button class="btn btn-success mt-0" type="submit" name="accept">Accept</button>
+                                                <button class="btn btn-danger mt-0" type="submit" name="reject">Reject</button>
+                                            </form>
+                                        {% endif %}
+
+                                        
                                     </div>
                                 </div>
                             </div>
