@@ -276,8 +276,8 @@ def judge_pr(request, pk):
                         return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
                                             {contributor}).")
                     except mail.BadHeaderError:
-                        return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email to the\
-                                            contributor("f"{contributor}).")
+                        return HttpResponse(f"PR Accepted Successfully, but there was some problem sending email \
+                                            to the contributor("f"{contributor}).")
                 elif pr.state == PullRequest.PENDING_VERIFICATION and form.is_valid() and "reject" in request.GET:
                     bonus = form.cleaned_data['bonus']
                     penalty = form.cleaned_data['penalty']
@@ -302,8 +302,8 @@ def judge_pr(request, pk):
                         return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
                                             {contributor}).")
                     except mail.BadHeaderError:
-                        return HttpResponse(f"PR rejected successfully, but there was some problem sending email to the\
-                                            contributor("f"{contributor}).")
+                        return HttpResponse(f"PR rejected successfully, but there was some problem sending email \
+                                            to the contributor("f"{contributor}).")
                 else:
                     message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
                                 still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
