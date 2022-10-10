@@ -2,9 +2,8 @@
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.conf import settings
 import threading
-from threading import Thread
+
 
 # email_context = {
 #     'mentor': issue.mentor,
@@ -14,8 +13,6 @@ from threading import Thread
 #     'host': request.get_host(),
 #     'subject': "Request for Issue Assignment under ContriHUB-21.",
 # }
-
-
 def send_email(template_path, email_context):
     # print(email_context)
     context = {
@@ -36,8 +33,8 @@ def send_email(template_path, email_context):
     to = str(email_context['receiver'].email)
 
     try:
-        mail.send_mail(email_context['subject'], plain_message, from_email, [to], html_message=html_message,
-                       fail_silently=False)
+        mail.send_mail(email_context['subject'], plain_message, from_email,
+                       [to], html_message=html_message, fail_silently=False)
     except mail.BadHeaderError:
         return mail.BadHeaderError
 
@@ -50,12 +47,12 @@ def send_email_to_admin(template_path, email_context):
     to = "contrihub.avishkar@gmail.com"
 
     try:
-        mail.send_mail(email_context['subject'], plain_message, from_email, [to], html_message=html_message,
-                       fail_silently=False)
+        mail.send_mail(email_context['subject'], plain_message, from_email,
+                       [to], html_message=html_message, fail_silently=False)
     except mail.BadHeaderError:
         return mail.BadHeaderError
-    
-    
+
+
 class EmailThread(threading.Thread):
     def __init__(self, template_path, email_context):
         self.template_path = template_path
@@ -81,7 +78,8 @@ class EmailThread(threading.Thread):
         to = str(self.email_context['receiver'].email)
 
         try:
-            mail.send_mail(self.email_context['subject'], plain_message, from_email, [to], html_message=html_message,
-                        fail_silently=False)
+            mail.send_mail(self.email_context['subject'], plain_message,
+                           from_email, [to], html_message=html_message,
+                           fail_silently=False)
         except mail.BadHeaderError:
             return mail.BadHeaderError
