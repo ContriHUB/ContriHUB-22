@@ -35,11 +35,11 @@ def profile(request, username):
             # TODO: ISSUE Fetch User's Avatar's URL from Github API and display it in profile
             pr_requests_by_student = PullRequest.objects.filter(contributor=user)
             assignment_requests_by_student = IssueAssignmentRequest.objects.filter(requester=user)
-            active_issues = ActiveIssue.objects.filter(contributor=user)
+            active_issues = ActiveIssue.objects.filter(contributor=user).order_by('-submitted_at')
 
             mentored_issues = Issue.objects.filter(mentor=user)
-            assignment_requests_for_mentor = IssueAssignmentRequest.objects.filter(issue__mentor=user)
-            pr_requests_for_mentor = PullRequest.objects.filter(issue__mentor=user)
+            assignment_requests_for_mentor = IssueAssignmentRequest.objects.filter(issue__mentor=user).order_by('-submitted_at')
+            pr_requests_for_mentor = PullRequest.objects.filter(issue__mentor=user).order_by('-submitted_at')
 
             pr_form = PRSubmissionForm()
 
