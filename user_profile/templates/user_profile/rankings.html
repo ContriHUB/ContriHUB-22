@@ -30,7 +30,10 @@
                 <td><b>@{{ contributor.user.username }}</b></td>
                 <td>
                     <span class="badge badge-pill badge-primary">
-                        {{ contributor.total_points }}
+                        {% widthratio contributor.deducted_points 1 -1 as deducted %}
+                        {% with total=contributor.total_points|add:contributor.bonus_points %}
+                        {{ total|add:deducted }}
+                        {% endwith %}
                     </span>
                 </td>
                 <td>
