@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from project.models import Issue, PullRequest, IssueAssignmentRequest, ActiveIssue
 from .forms import UserProfileForm
 from .models import UserProfile
-from home.helpers import send_email_to_admin
+from home.helpers import EmailThread_to_admin
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm
 import json
@@ -142,7 +142,7 @@ def edit_profile(request):
                 'new_course': new_course,
                 'new_year': new_year,
             }
-            send_email_to_admin(template_path=template_path, email_context=email_context)
+            EmailThread_to_admin(template_path, email_context).start()
 
             return HttpResponse(status=200)
         else:
