@@ -310,16 +310,13 @@ def judge_pr(request, pk):
                     message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
                                 still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
                                 frontend is an ISSUE."
+            else:
+                message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project \
+                     <a href="f"{issue.project.html_url}>{issue.project.name}</a>"
         else:
             message = "This PR is probably already Accepted. Probably in the FrontEnd You still see the " \
                     "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
         return HttpResponse(message)
-            message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project <a href=" \
-                      f"{issue.project.html_url}>{issue.project.name}</a>"
-    else:
-        message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You still see \
-                    the "  "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
-    return HttpResponse(message)
 
 
 @login_required
