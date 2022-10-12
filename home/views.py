@@ -274,7 +274,7 @@ def judge_pr(request, pk):
                         'receiver': contributor,
                     }
                     try:
-                        send_email(template_path=template_path, email_context=email_context)
+                        EmailThread(template_path, email_context).start()
                         return HttpResponse(f"PR Accepted Successfully. Email sent to the contributor(\
                                             {contributor}).")
                     except mail.BadHeaderError:
@@ -300,7 +300,7 @@ def judge_pr(request, pk):
                         'receiver': contributor,
                     }
                     try:
-                        send_email(template_path=template_path, email_context=email_context)
+                        EmailThread(template_path, email_context).start()
                         return HttpResponse(f"PR rejected successfully. Email sent to the contributor(\
                                             {contributor}).")
                     except mail.BadHeaderError:
