@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% load crispy_forms_tags %} 
+
+{% block title %} 
+    Contact Form 
+{% endblock %} 
+
+{% block content %} 
+    {% include "home/navbar.html" %}
+    <div class="container-flow">
+        <div class="container-lg bg-white rounded p-4" style="max-width: 75%;">
+            <form method='POST'>
+                {% csrf_token %}
+                {{ form | crispy }}
+                <div class="row p-2 text-center">
+                    <div>
+                        <button class='btn btn-primary' type='Submit'>Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %} 

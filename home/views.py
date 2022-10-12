@@ -1,13 +1,14 @@
-from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse, redirect
+from django.core.mail import EmailMessage, send_mail, BadHeaderError
 
-from home.helpers import send_email
+from home.helpers import EmailThread
 from django.core import mail
-
 from project.models import Project, Issue, IssueAssignmentRequest, ActiveIssue, PullRequest, Domain, SubDomain
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm, PRJudgeForm
+
 from django.utils import timezone
 
 
@@ -18,6 +19,7 @@ from django.utils import timezone
 # TODO:ISSUE: Make a Custom Http404 Page
 # TODO:ISSUE: Up-vote Down-vote Issue Feature
 from user_profile.models import UserProfile
+from .forms import ContactForm
 
 
 @complete_profile_required
@@ -102,8 +104,8 @@ def logout_(request):
 def request_issue_assignment(request, issue_pk):
     issue = Issue.objects.get(pk=issue_pk)
     requester = request.user
-
     if issue.is_assignable(requester=requester):
+
         IssueAssignmentRequest.objects.create(issue=issue, requester=requester)
         message = f"Assignment Request for Issue <a href={issue.html_url}>#{issue.number}</a> of " \
                   f"<a href={issue.project.html_url}>{issue.project.name}</a> submitted successfully. "
@@ -121,7 +123,7 @@ def request_issue_assignment(request, issue_pk):
             'receiver': issue.mentor,
         }
         try:
-            send_email(template_path=template_path, email_context=email_context)
+            EmailThread(template_path, email_context).start()
             # TODO:ISSUE: Create Html Template for HttpResponses in home/views.py
             return HttpResponse(f"Issue Requested Successfully. Email Request Sent to the Mentor(\
                                 {issue.mentor.username}). Keep your eye out on your profile.")
@@ -208,7 +210,7 @@ def submit_pr_request(request, active_issue_pk):
                     'receiver': issue.mentor,
                 }
                 try:
-                    send_email(template_path=template_path, email_context=email_context)
+                    EmailThread(template_path, email_context).start()
                     message = f"Email Request Sent to the Mentor({issue.mentor.username}). PR Verification Request\
                               Successfully Submitted for <a href={issue.html_url}>Issue #" f"{issue.number}\
                               </a> of Project <a href={issue.project.html_url}>{issue.project.name}</a>"
@@ -308,10 +310,32 @@ def judge_pr(request, pk):
                     message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You\
                                 still see the " "Accept/Reject Button, because showing ACCEPTED/REJECTED status in\
                                 frontend is an ISSUE."
-            else:
-                message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project \
-                     <a href="f"{issue.project.html_url}>{issue.project.name}</a>"
         else:
             message = "This PR is probably already Accepted. Probably in the FrontEnd You still see the " \
                     "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
         return HttpResponse(message)
+            message = f"You are not mentor of Issue <a href={issue.html_url}>{issue.number}</a> of Project <a href=" \
+                      f"{issue.project.html_url}>{issue.project.name}</a>"
+    else:
+        message = "This PR Verification Request is already Accepted/Rejected. Probably in the FrontEnd You still see \
+                    the "  "Accept/Reject Button, because showing ACCEPTED/REJECTED status in frontend is an ISSUE."
+    return HttpResponse(message)
+
+
+@login_required
+def contact_form(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        user = form['name'].value()
+        email = form['email'].value()
+        body = form['body'].value()
+        subject = form['subject'].value()
+        message = 'Name: {}\nEmail: {}\n\n{}'.format(user, email, body)
+        try:
+            send_mail(subject, message, '', ['contrihub.avishkar@gmail.com'])
+        except BadHeaderError:
+            return HttpResponse('Mail could not be sent. Try again later!!')
+        return redirect('home')
+    elif request.method == 'GET':
+        form = ContactForm()
+        return render(request, 'home/contact_form.html', context={'form': form})
