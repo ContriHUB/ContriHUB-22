@@ -1,54 +1,88 @@
-<section class="vh-100">
+<section class="vh-120">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col col-lg-6 mb-4 mb-lg-0">
-        <div class="card mb-3" style="border-radius: .5rem;">
+        <div class="card mb-3" style="border-radius: 0.5rem">
           <div class="row g-0">
-            <div class="col-md-4 gradient-custom text-center" style="display:flex; flex-direction:column; justify-content: center; border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-              <h5>{{ native_profile.user.first_name }} {{ native_profile.user.last_name }}</h5>
-              <p>@{{ native_profile.user.username }}</p>
+            <div
+              class="col-md-4 gradient-custom text-center"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-top-left-radius: 0.5rem;
+                border-bottom-left-radius: 0.5rem;
+              "
+            >
+              <img src="https://github.com/{{ native_profile.user.username }}.png">
+              <h5>
+                {{ native_profile.user.first_name }} 
+                {{ native_profile.user.last_name }}
+              </h5>
+              <a href = "https://www.github.com/{{ native_profile.user.username }}" target = "_blank"> <p>@{{ native_profile.user.username }}</p> </a>
             </div>
             <div class="col-md-8 text-center">
               <div class="card-body p-4">
-                <h6><b>Personal Information</b></h6>
-                <hr class="mt-0 mb-4">
+                {% if user.username == native_profile.user.username and user.userprofile.role == user.userprofile.STUDENT %}
+                  <div class="row">
+                    <div class="col-10 text-center">
+                      <h6><b>Personal Information</b></h6>
+                    </div>
+                    <div class="col-2">
+                      <i role='button' class="fas fa-edit position-absolute" onclick="toggleEditProfileModal();"></i>
+                    </div>
+                  </div>
+                {% else %}
+                  <h6><b>Personal Information</b></h6>
+                {% endif %}
+                <hr class="mt-0 mb-4" />
                 <div class="row pt-1">
                   <div class="col-6 mb-3">
                     <h6><b>Role</b></h6>
-                    <p class="text-muted">{{ native_profile.get_role_display }}</p>
+                    <p class="text-muted">
+                      {{ native_profile.get_role_display }}
+                    </p>
                   </div>
                   <div class="col-6 mb-3">
                     <h6><b>Regno</b></h6>
-                    <p class="text-muted">{{ native_profile.registration_no }}</p>
+                    <p class="text-muted">
+                      {{ native_profile.registration_no }}
+                    </p>
                   </div>
                 </div>
                 <div class="row pt-1">
                   <div class="col-6 mb-3">
                     <h6><b>Course</b></h6>
-                    <p class="text-muted">{{ native_profile.get_course_display }}</p>
+                    <p class="text-muted">
+                      {{ native_profile.get_course_display }}
+                    </p>
                   </div>
                   <div class="col-6 mb-3">
                     <h6><b>Month</b></h6>
-                    <p class="text-muted">{{ native_profile.get_current_year_display }}</p>
+                    <p class="text-muted">
+                      {{ native_profile.get_current_year_display }}
+                    </p>
                   </div>
                 </div>
 
-                  <div class="row pt-1">
+                <div class="row pt-1">
                   <div class="col-12 mb-3">
                     <h6><b>LinkedIn ID</b></h6>
-                    <p class="text-muted">{{ native_profile.linkedin_id }}</p>
+                    <a href="{{ native_profile.linkedin_id }}" target="_blank">
+                      <p class="text-muted profile-card-linkedin-id">{{ native_profile.linkedin_id }}</p>
+                    </a>
                   </div>
                 </div>
-                  {% if native_profile.role == native_profile.STUDENT %}
-                    <h6><b>#Respect</b></h6>
-                    <hr class="mt-0 mb-4">
-                    <div class="row pt-1">
-                      <div class="col-12 mb-3">
-                        <h6><b>Total Points</b></h6>
-                        <p class="text-muted">{{ native_profile.total_points }}</p>
-                      </div>
-                    </div>
-                  {% endif %}
+                {% if native_profile.role == native_profile.STUDENT %}
+                <h6><b>#Respect</b></h6>
+                <hr class="mt-0 mb-4" />
+                <div class="row pt-1">
+                  <div class="col-12 mb-3">
+                    <h6><b>Total Points</b></h6>
+                    <p class="text-muted">{{ native_profile.total_points }}</p>
+                  </div>
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -56,4 +90,120 @@
       </div>
     </div>
   </div>
+  {% if user.username == native_profile.user.username and user.userprofile.role == user.userprofile.STUDENT %}
+      <div 
+        class="position-fixed w-100 h-100 edit-profile-modal-blur"
+        style="
+          top: 0;
+          left: 0;
+          background-color: black;
+          opacity: 0.5;
+          display: none;
+        "
+      >
+      </div>
+      <div 
+        class="position-fixed w-100 edit-profile-modal"
+        style="
+          top: 20%;
+          left: 0;
+          display: none;
+        "
+      >
+        <form
+          class="px-3 py-4 w-100 mx-auto"
+          style="
+            background-color: white;
+            max-width: 800px;
+            border-radius: 10px;
+          "
+        >
+          <div class="row">
+            <div class="col-10 text-center">
+              <p class="text-center font-weight-bold">LinkedIn Profile ID can be edited immediately</p>
+            </div>
+            <div class="col-2 d-flex justify-content-end">
+              <i role='button' class="fas fa-times-circle" onclick="toggleEditProfileModal();"></i>
+            </div>
+          </div>
+
+          <div class="form-outline mb-4">
+            <input type="url" id="edit-linkedin" class="form-control" value="{{ native_profile.linkedin_id }}" placeholder="Enter your LinkedIn ID" />
+            <label class="form-label" for="edit-linkedin">LinkedIn ID</label>
+          </div>
+
+          <p class="text-center font-italic edit-linkedin-success" style="color: darkgreen;"></p>
+          <p class="text-center font-italic edit-linkedin-error" style="color: crimson;"></p>
+        
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto" onclick="editLinkedInID(event);">Edit</button>
+
+          <p class="text-center font-weight-bold">For editing other details, a request will be sent to the Admin so be patient to see the changes</p>
+
+          <div class="row mb-2">
+            <div class="col-12 col-md-6">
+              <div class="form-outline">
+                <input type="text" id="edit-regno" class="form-control" value="{{ native_profile.registration_no }}" placeholder="Enter your Regno" />
+                <label class="form-label" for="edit-regno">Regno</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mt-2 mt-md-0">
+              <div class="form-outline">
+                <input type="text" id="edit-name" class="form-control" value="{{ native_profile.user.first_name }} {{ native_profile.user.last_name }}" placeholder="Enter your Name" />
+                <label class="form-label" for="edit-name">Name</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12 col-md-6">
+              <div class="form-outline">
+                <select 
+                  class="form-control" 
+                  id="edit-year" 
+                  style="
+                    border-radius: 0.25rem;
+                    border: 1px solid #bdbdbd;
+                  "
+                >
+                  {% for year in student_years %}
+                    {% if year.1 == native_profile.get_current_year_display %}
+                      <option value="{{ year.1 }}" selected>{{ year.1 }}</option>
+                    {% else %}
+                      <option value="{{ year.1 }}">{{ year.1 }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <label class="form-label" for="edit-year" style="transform: translateY(-1rem) translateY(0.1rem) scale(.8);">Year</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mt-2 mt-md-0">
+              <div class="form-outline">
+                <select 
+                  class="form-control" 
+                  id="edit-course" 
+                  style="
+                    border-radius: 0.25rem;
+                    border: 1px solid #bdbdbd;
+                  "
+                >
+                  {% for course in student_courses %}
+                    {% if course.1 == native_profile.get_course_display %}
+                      <option value="{{ course.1 }}" selected>{{ course.1 }}</option>
+                    {% else %}
+                      <option value="{{ course.1 }}">{{ course.1 }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <label class="form-label" for="edit-course" style="transform: translateY(-1rem) translateY(0.1rem) scale(.8);">Course</label>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center font-italic edit-profile-success" style="color: darkgreen;"></p>
+          <p class="text-center font-italic edit-profile-error" style="color: crimson;"></p>
+
+          <button class="btn btn-primary btn-block mb-4 w-75 mx-auto" onclick="editProfile(event);">Submit Request</button>
+        </form>
+      </div>
+  {% endif %}
 </section>

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from .models import Project, Issue
 from helper import safe_hit_url, SUCCESS, complete_profile_required
+from config import api_endpoint, html_endpoint
 
 User = get_user_model()
 
@@ -19,8 +20,8 @@ def populate_projects(request):
     :param request:
     :return:
     """
-    api_uri = "https://api.github.com/repos/ContriHUB/"
-    html_uri = "https://github.com/ContriHUB/"
+    api_uri = api_endpoint['contrihub_api_1']
+    html_uri = html_endpoint['contrihub_html']
     # print(AVAILABLE_PROJECTS)
     for project_name in AVAILABLE_PROJECTS:
         project_qs = Project.objects.filter(name=project_name)
@@ -52,7 +53,7 @@ def populate_issues(request):
         "Authorization": f"token {social.extra_data['access_token']}",  # Authentication
     }
 
-    uri = "https://api.github.com/repos/contrihub/"
+    uri = api_endpoint['contrihub_api_2']
 
     for project in project_qs:
         url = f"{uri}{project.name}/issues"
@@ -62,13 +63,18 @@ def populate_issues(request):
             for issue in issues:
                 # print(issue)
                 # TODO: Can be given as ISSUE
-                if issue['user']['login'] == DEPENDABOT_LOGIN:  # Ignoring issues created by Dependabot
+                try:
+                    if issue['user']['login'] == DEPENDABOT_LOGIN:  # Ignoring issues created by Dependabot
+                        continue
+                except:
                     continue
+                finally:
+                    print('error')
                 if issue.get('pull_request') is not None:  # this issue is actually a PR.
                     # Source: https://docs.github.com/en/rest/reference/issues#list-repository-issues
                     print("This issue is a actually a PR")
                     continue
-                title, number = issue['title'], issue['number']
+                title, number, state = issue['title'], issue['number'], issue['state']
                 mentor_name, level, points, bonus_pt, is_restricted = parse_labels(labels=issue['labels'])
                 # print("Fsf ",mentor_name)
                 api_url, html_url = issue['url'], issue['html_url']
@@ -81,6 +87,11 @@ def populate_issues(request):
                     db_issue.points = points
                     db_issue.bonus_pt = bonus_pt
                     db_issue.is_restricted = is_restricted
+                    if state == "closed":
+                        db_issue.state = db_issue.CLOSED
+                    else:
+                        db_issue.state = db_issue.OPEN
+
                 else:  # Else Create New
                     db_issue = Issue(
                         number=number,
@@ -130,7 +141,9 @@ def parse_level(level):
     level = str(level).lower()
     levels_read = (Issue.FREE_READ, Issue.VERY_EASY_READ, Issue.EASY_READ, Issue.MEDIUM_READ, Issue.HARD_READ)
     levels = (Issue.FREE, Issue.VERY_EASY, Issue.EASY, Issue.MEDIUM, Issue.HARD)
-    default_points = (DEFAULT_FREE_POINTS, DEFAULT_VERY_EASY_POINTS, DEFAULT_EASY_POINTS, DEFAULT_MEDIUM_POINTS, DEFAULT_HARD_POINTS)
+    default_points = (
+        DEFAULT_FREE_POINTS, DEFAULT_VERY_EASY_POINTS, DEFAULT_EASY_POINTS, DEFAULT_MEDIUM_POINTS, DEFAULT_HARD_POINTS
+    )
 
     for lev, read, pts in zip(levels, levels_read, default_points):
         if level == str(read).lower():

@@ -24,6 +24,7 @@
             <th>Deducted Points</th>
         </tr>
         {% for contributor in contributors %}
+            {% if contributor.total_points > 0 %}
             <tr>
                 <td><b>{{ forloop.counter }}</b></td>
                 <td><b>@{{ contributor.user.username }}</b></td>
@@ -43,6 +44,7 @@
                     </span>
                 </td>
             </tr>
+            {% endif %}
         {% endfor %}
 
     </table>

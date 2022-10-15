@@ -63,13 +63,29 @@
                         </div>
                     </div>
                 </div>
-    </div>
-        <div class="row row-cols-1 row-cols-md-2">
-            {% for issue in issues %}
+        </div>
+        <div class="d-flex justify-content-center shadow-lg p-3 rounded text-center" style="background-color: rgba(0, 0, 0, 0.2);margin: 0 1rem;">
+            <div class="bg-transparent py-3 px-3 row row-cols-1 row-cols-md-3 text-white ">
+                <div class="col align-self-center"><i class="lni lni-grid-alt"></i></div>
+                <div class="col align-self-center">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggle-view">
+                    </div>
+                </div>
+                <div class="col align-self-center"><i class="lni lni-list"></i></div>
+            </div>
+        </div>
+
+        <div id="cardview">
+            <div class="row row-cols-1 row-cols-md-2">
+                {% for issue in issues %}
                 <div class="col">
                     <div class="card m-3 text-center" style="border-radius: 15px;">
                         <div class="card-header">
                         Issue #{{ issue.number }} - {{ issue.project.domain }}
+                        {% if issue.project.subdomain != None %}
+                            ({{ issue.project.subdomain }})
+                        {% endif %}
                         </div>
                         <div class="card-body">
 
@@ -92,9 +108,10 @@
                                         <i class="fas fa-exclamation-triangle"></i>
                                     </a>
                                 {% endif %}
+                                
                             </p>
 
-                      </div>
+                        </div>
                         <div class="card-footer text-muted">
                             {% if issue.state == issue.OPEN %}
                                 <a class="btn btn-rounded btn-success">{{ issue.get_state_display }}</a>
@@ -107,16 +124,145 @@
                             {% else %}
                                 <a class="btn btn-rounded btn-danger">{{ issue.get_state_display }}</a>
                             {% endif %}
+                            <a href="{% url 'like_issue' issue.pk %}"><button data-mdb-toggle="tooltip" title="Like" class="btn btn-rounded btn-primary" id="liveToastBtnlike{{issue.pk}}"><i class="fa-regular fa-thumbs-up fs-6 text-light">  {{issue.likes}}</i></button></a>
+                            <a href="{% url 'dislike_issue' issue.pk %}"><button data-mdb-toggle="tooltip" title="Dislike" class="btn btn-rounded btn-danger" id="liveToastBtndislike{{issue.pk}}"><i class="fa-regular fa-thumbs-down fs-6 text-light">  {{issue.dislikes}}</i></button></a>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+                <script>
+                    var option = {
+                        animation: true,
+                        delay: 2000
+                    };
+                    document.getElementById("liveToastBtnlike{{issue.pk}}").onclick=function() {
+                        var myAlert = document.getElementById('liveToastlike')
+                        var bsAlert = new bootstrap.Toast(myAlert, option);
+                        bsAlert.show();
+                    }
+                </script>
+                <script>
+                    var option = {
+                        animation: true,
+                        delay: 2000
+                    };
+                    document.getElementById("liveToastBtndislike{{issue.pk}}").onclick=function() {
+                        var myAlert = document.getElementById('liveToastdislike')
+                        var bsAlert = new bootstrap.Toast(myAlert, option);
+                        bsAlert.show();
+                    }
+                </script>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="tabularview" class="mx-4" style="display: none;">
+            <div class="row row-cols-1 row-cols-md-2" style="margin-top: 0.8rem;">
+                <table class="table">
+                    <thead class="bg-dark text-white">
+                        <tr class="align-middle text-center">
+                        <th scope="col">#</th>
+                        <th scope="col">Issue</th>
+                        <th scope="col">Project</th>
+                        <th scope="col">Domain</th>
+                        <th scope="col">Mentor</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Level</th>
+                        <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    
+                    {% for issue in issues %}
+                        <tbody class="bg-light">
+                        <tr class="align-middle text-center">
+                            <th scope="row">{{ issue.number }}</th>
+                            <td><a href="{{ issue.html_url }}">{{ issue.title }}</a></td>
+                            <td><a data-mdb-toggle="tooltip" title="Project" href="{{ issue.project.html_url }}">{{ issue.project.name }}</a></td>
+                            <td>{{ issue.project.domain }}</td>
+                            <td>@{{ issue.mentor }}</td>
+                            <td>{{ issue.points }}</td>
+                            <td><a class="btn btn-rounded btn-info mt-0" data-mdb-toggle="tooltip" title="Level">{{ issue.get_level_display }}</a></td>
+                            <td>
+                                {% if issue.is_restricted %}
+                                <button data-mdb-toggle="tooltip"
+                                        title="Restricted" type="button" class="btn btn-rounded btn-warning mt=0">
+                                    <a class="text-white"><i class="fas fa-exclamation-triangle"></i></a>
+                                </button>
+                                {% endif %}
+                                
+                                {% if issue.state == issue.OPEN %}
+                                    <button data-mdb-toggle="tooltip"
+                                        title="Issue is open" type="button" class="btn btn-rounded btn-success mt=0">
+                                        <a class="text-white">{{ issue.get_state_display }}</a>
+                                    </button>
+
+                                    <button data-mdb-toggle="tooltip" 
+                                        title="Ask mentor for assigning Issue" type="button" class="btn btn-primary mt-0">
+                                        <a class="text-white" href="{% url 'request_issue_assignment' issue.pk %}">
+                                            Request Assignment
+                                        </a>
+                                    </button>
+                                    <a href="{% url 'like_issue' issue.pk %}"><button data-mdb-toggle="tooltip" title="Like" class="btn btn-rounded btn-primary" id="liveToastBtnlike1{{issue.pk}}"><i class="fa-regular fa-thumbs-up fs-6 text-light">  {{issue.likes}}</i></button></a>
+                                    <a href="{% url 'dislike_issue' issue.pk %}"><button data-mdb-toggle="tooltip" title="Dislike" class="btn btn-rounded btn-danger" id="liveToastBtndislike2{{issue.pk}}"><i class="fa-regular fa-thumbs-down fs-6 text-light">  {{issue.dislikes}}</i></button></a>
+                                {% else %}
+                                    <a class="btn btn-rounded btn-danger">{{ issue.get_state_display }}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                        <script>
+                            var option = {
+                                animation: true,
+                                delay: 2000
+                            };
+                            document.getElementById("liveToastBtnlike1{{issue.pk}}").onclick=function() {
+                                var myAlert = document.getElementById('liveToastlike')
+                                var bsAlert = new bootstrap.Toast(myAlert, option);
+                                bsAlert.show();
+                            }
+                        </script>
+                        <script>
+                            var option = {
+                                animation: true,
+                                delay: 2000
+                            };
+                            document.getElementById("liveToastBtndislike2{{issue.pk}}").onclick=function() {
+                                var myAlert = document.getElementById('liveToastdislike')
+                                var bsAlert = new bootstrap.Toast(myAlert, option);
+                                bsAlert.show();
+                            }
+                        </script>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     </div>
-
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToastlike" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <strong class="me-auto fs-5">You liked this Issue</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            
+        </div>
+    </div>
+   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToastdislike" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <strong class="me-auto fs-5">You disliked this Isssue</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascript %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $("#toggle-view").click(function(){
+        console.log("hello");
+        $("#tabularview, #cardview").toggle();
+    });
+</script>
 
 {% endblock %}
 

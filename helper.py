@@ -98,7 +98,8 @@ def check_issue_time_limit(func):
                     active_issue = active_issue_qs[0]
                     if is_deadline_passed(active_issue):  # Deadline Crossed
                         active_issue.delete()
-                        # TODO: ISSUE: set a message i.e. "Dead Crossed" here and redirect to user profile and show this
+                        # TODO: ISSUE: set a message i.e. "Dead Crossed" here and redirect to user profile and show \
+                        # this
                         #  message
                         return HttpResponse("Deadline Crossed")
                     else:

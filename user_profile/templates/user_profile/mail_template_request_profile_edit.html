@@ -1,0 +1,26 @@
+{% comment %}
+    context = {
+        'username': ,
+        'protocol': ,
+        'host': ,
+        'new_regno': ,
+        'new_name': ,
+        'new_course': ,
+        'new_year': ,
+    }
+{% endcomment %}
+{% autoescape off %}
+<br>
+Hi there! <b>Admin</b>,<br><br>
+
+PFB the new details for the profile edit requested by:<br><br>
+<b>Username:</b> {{ username }} <br>
+<b>User Profile:</b> {{ protocol }}://{{ host }}/profile/user/{{ username }} <br><br>
+<b>New Registration Number:</b> {{ new_regno }} <br>
+<b>New Name:</b> {{ new_name }} <br>
+<b>New Course:</b> {{ new_course }} <br>
+<b>New Year:</b> {{ new_year }} <br><br>
+
+Sincerely,<br>
+ContriHUB-22 Team<br>
+{% endautoescape %}

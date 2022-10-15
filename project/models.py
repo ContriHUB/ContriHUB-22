@@ -1,9 +1,27 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from contrihub.settings import MAX_SIMULTANEOUS_ISSUE, DAYS_PER_ISSUE_FREE, DAYS_PER_ISSUE_EASY, DAYS_PER_ISSUE_MEDIUM, DAYS_PER_ISSUE_HARD, DAYS_PER_ISSUE_VERY_EASY
+from contrihub.settings import MAX_SIMULTANEOUS_ISSUE, DAYS_PER_ISSUE_FREE, DAYS_PER_ISSUE_EASY, \
+    DAYS_PER_ISSUE_MEDIUM, DAYS_PER_ISSUE_HARD, DAYS_PER_ISSUE_VERY_EASY
 from django.utils import timezone
+from user_profile.models import UserProfile
 
 User = get_user_model()
+
+
+class Domain(models.Model):
+
+    name = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SubDomain(models.Model):
+
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Project(models.Model):
@@ -12,8 +30,8 @@ class Project(models.Model):
     api_url = models.URLField(verbose_name="API URL")
 
     html_url = models.URLField(verbose_name="HTML URL")
-
-    domain = models.CharField(verbose_name="Domain", max_length=100, null=True, blank=True)
+    domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING, null=True, default=None)
+    subdomain = models.ForeignKey(SubDomain, on_delete=models.DO_NOTHING, blank=True, default=None, null=True)
 
     def __str__(self):
         return self.name
@@ -21,7 +39,8 @@ class Project(models.Model):
 
 class Issue(models.Model):
     FREE, EASY, MEDIUM, HARD, VERY_EASY = 0, 1, 2, 3, 4
-    FREE_READ, VERY_EASY_READ, EASY_READ, MEDIUM_READ, HARD_READ = "Free", "Very-Easy", "Easy", "Medium", "Hard"  # Human Readable Names
+    FREE_READ, VERY_EASY_READ, EASY_READ, MEDIUM_READ, HARD_READ = "Free", "Very-Easy", "Easy", "Medium", "Hard" \
+        # Human Readable Names
     LEVELS = (
         (FREE, FREE_READ),  # (Value, Human Readable Name)
         (VERY_EASY, VERY_EASY_READ),
@@ -61,6 +80,10 @@ class Issue(models.Model):
 
     # Bonus Points
     bonus_pt = models.IntegerField(verbose_name="Bonus Points", default=0)
+    
+    likes = models.IntegerField(default=0)
+
+    dislikes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -81,7 +104,9 @@ class Issue(models.Model):
             return False
 
         # TEST: Start
-        requester_requests_count = IssueAssignmentRequest.objects.filter(requester=requester, state=IssueAssignmentRequest.PENDING_VERIFICATION).count()
+        requester_requests_count = IssueAssignmentRequest.objects.filter(requester=requester,
+                                                                         state=IssueAssignmentRequest.
+                                                                         PENDING_VERIFICATION).count()
         requester_active_issue_count = ActiveIssue.objects.filter(contributor=requester).count()
         if requester_requests_count + requester_active_issue_count > MAX_SIMULTANEOUS_ISSUE:
             return False
@@ -148,10 +173,12 @@ class PullRequest(models.Model):
 
     submitted_at = models.DateTimeField(verbose_name="Submitted At", default=timezone.now)
 
+    remark = models.CharField(verbose_name="remark", max_length=100,  blank=True, null=True)
+
     def __str__(self):
         return f"{self.contributor}_{self.issue}"
 
-    def accept(self, bonus=0, penalty=0):
+    def accept(self, bonus=0, penalty=0, remark=''):
         """
         Method to accept (verify) PR.
         :param bonus:
@@ -163,6 +190,7 @@ class PullRequest(models.Model):
         self.state = self.ACCEPTED
         self.bonus = int(bonus)
         self.penalty = int(penalty)
+        self.remark = remark
         self.save()
 
         # Updating related Issue
@@ -171,7 +199,7 @@ class PullRequest(models.Model):
 
         # Updating Contributor's Profile
         contributor_profile = self.contributor.userprofile
-        contributor_profile.total_points += int(self.issue.points)
+        contributor_profile.total_points += int(self.issue.points) + int(bonus) - int(penalty)
         contributor_profile.bonus_points += int(bonus)
         contributor_profile.deducted_points += int(penalty)
         contributor_profile.save()
@@ -182,7 +210,7 @@ class PullRequest(models.Model):
         except AttributeError:
             pass
 
-    def reject(self, bonus=0, penalty=0):
+    def reject(self, bonus=0, penalty=0, remark=''):
         """
         Method to reject (verify) PR.
         :param bonus:
@@ -194,10 +222,12 @@ class PullRequest(models.Model):
         self.state = self.REJECTED
         self.bonus = int(bonus)
         self.penalty = int(penalty)
+        self.remark = remark
         self.save()
 
         # Updating Contributor's Profile
         contributor_profile = self.contributor.userprofile
+        contributor_profile.total_points += int(bonus) - int(penalty)
         contributor_profile.bonus_points += int(bonus)
         contributor_profile.deducted_points += int(penalty)
         contributor_profile.save()
@@ -279,3 +309,14 @@ class ActiveIssue(models.Model):
     #  places.
     def get_remaining_time(self):
         return self.assigned_at + timezone.timedelta(days=self.issue.get_issue_days_limit())
+
+
+class Like(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_like')
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='issue_like')
+
+
+class Dislike(models.Model):
+
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_dislike')
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='issue_dislike')
