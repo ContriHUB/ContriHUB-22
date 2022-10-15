@@ -59,6 +59,9 @@ class Issue(models.Model):
     # Restricted only for BTech 2nd yr and MCA 2nd yr.
     is_restricted = models.BooleanField(verbose_name='Is Restricted', default=False)
 
+    # Bonus Points
+    bonus_pt = models.IntegerField(verbose_name="Bonus Points", default=0)
+
     def __str__(self):
         return self.title
 
