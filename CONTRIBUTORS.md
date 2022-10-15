@@ -8,3 +8,4 @@ Add your name in the given format.
 * [Ritesh Maurya](https://github.com/MauryaRitesh)
 * [Kunal Katiyar](https://github.com/kunal2812)
 * [Krishna Soni](https://github.com/Krishna1922)
+* [Pranshu Tiwari](https://github.com/PranshuTiwari14)
