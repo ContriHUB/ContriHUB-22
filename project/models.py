@@ -253,6 +253,8 @@ class IssueAssignmentRequest(models.Model):
 
     state = models.PositiveSmallIntegerField(verbose_name="State", choices=STATES, default=PENDING_VERIFICATION)
 
+    requested_at = models.DateTimeField(verbose_name="Requested At", default=timezone.now)
+
     def __str__(self):
         return f"{self.requester}_{self.issue}"
 

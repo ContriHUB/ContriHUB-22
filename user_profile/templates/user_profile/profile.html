@@ -347,7 +347,9 @@ Profile @{{ native_profile.user.username }}
                                                 </a>
                                             {% endif %}
                                         </p>
-
+                                        {% if request.state == request.PENDING_VERIFICATION %}
+                                        {{ request.requested_at | timesince }} ago
+                                        {% endif %}
                                   </div>
                                     <div class="card-footer text-muted">
                                         {% if request.state == request.ACCEPTED %}

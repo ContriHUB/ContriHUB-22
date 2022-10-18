@@ -10,6 +10,7 @@ from project.forms import PRJudgeForm, PRSubmissionForm
 from django.contrib import messages
 import json
 import re
+from itertools import chain
 
 User = get_user_model()
 
@@ -40,8 +41,22 @@ def profile(request, username):
             active_issues = ActiveIssue.objects.filter(contributor=user)
 
             mentored_issues = Issue.objects.filter(mentor=user)
+
             assignment_requests_for_mentor = IssueAssignmentRequest.objects.filter(issue__mentor=user)
+            accepted_assignment_requests_for_mentor = assignment_requests_for_mentor.filter(state=1)
+            rejected_assignment_requests_for_mentor = assignment_requests_for_mentor.filter(state=2)
+            pending_assignment_requests_for_mentor = assignment_requests_for_mentor.filter(state=3)\
+                                                                                   .order_by("requested_at")
+            assignment_requests_for_mentor = chain(pending_assignment_requests_for_mentor,
+                                                   accepted_assignment_requests_for_mentor,
+                                                   rejected_assignment_requests_for_mentor)
+
             pr_requests_for_mentor = PullRequest.objects.filter(issue__mentor=user)
+            accepted_pr_requests_for_mentor = pr_requests_for_mentor.filter(state=1)
+            rejected_pr_requests_for_mentor = pr_requests_for_mentor.filter(state=2)
+            pending_pr_requests_for_mentor = pr_requests_for_mentor.filter(state=3).order_by("submitted_at")
+            pr_requests_for_mentor = chain(pending_pr_requests_for_mentor,
+                                           accepted_pr_requests_for_mentor, rejected_pr_requests_for_mentor)
 
             pr_form = PRSubmissionForm()
             judge_form = PRJudgeForm()

@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from helper import complete_profile_required, check_issue_time_limit
 from project.forms import PRSubmissionForm, PRJudgeForm
 from django.utils import timezone
+from django.contrib import messages
 
 
 # TODO:ISSUE: Replace each HttpResponse with a HTML page
@@ -333,6 +334,7 @@ def contact_form(request):
             send_mail(subject, message, '', ['contrihub.avishkar@gmail.com'])
         except BadHeaderError:
             return HttpResponse('Mail could not be sent. Try again later!!')
+        messages.success(request, "Message sent successfully")
         return redirect('home')
     elif request.method == 'GET':
         form = ContactForm()
