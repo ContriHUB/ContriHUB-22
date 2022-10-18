@@ -111,6 +111,9 @@
                                 <a class="btn btn-rounded btn-info" data-mdb-toggle="tooltip" title="Mentor">@{{ issue.mentor }}</a>
                                 <a class="btn btn-rounded btn-info" data-mdb-toggle="tooltip" title="Level">{{ issue.get_level_display }}</a>
                                 <a class="btn btn-rounded btn-info" data-mdb-toggle="tooltip" title="Points">{{ issue.points }}</a>
+                                {% if issue.bonus_pt != 0 %}
+                                    <a class="btn btn-rounded btn-info" data-mdb-toggle="tooltip" title="Bonus" style="background-color:#FF1493 !important;">{{ issue.bonus_pt }}</a>
+                                {% endif %}
                                 {% if issue.is_restricted %}
                                     <a class="btn btn-rounded btn-warning" data-mdb-toggle="tooltip" title="Restricted">
                                         <i class="fas fa-exclamation-triangle"></i>
